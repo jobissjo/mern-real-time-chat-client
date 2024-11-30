@@ -3,10 +3,12 @@ import { useDispatch, useSelector } from 'react-redux';
 import toast from 'react-hot-toast';
 import { createNewChat } from '../../../apiCalls/chat';
 import { showLoader, hideLoader } from '../../../redux/loaderSlice';
-import { setAllChats, setSelectedChat } from '../../../redux/userSlice';
+import { setAllChats,  setSelectedChat } from '../../../redux/userSlice';
+import moment from 'moment';
 
 const UserList = ({searchKey}) => {
-  const {allUsers, allChats, user:currentUser } =  useSelector(state => state.userReducer);
+  const {allUsers, allChats, user:currentUser, selectedChat } =  useSelector(state => state.userReducer);
+
   const dispatch = useDispatch();
   
   const startNewChat = async (member_id) => {
@@ -32,19 +34,65 @@ const UserList = ({searchKey}) => {
     }
   }
 
+  const getLastMessageTimeStamp = (userId) => {
+        const chat = allChats.find(chat => chat.members.map(m => m._id).includes(userId));
+
+        if(!chat || !chat?.lastMessage){
+            return "";
+        }else{
+            return moment(chat?.lastMessage?.createdAt).format('hh:mm A');
+        }
+    }
+
+  const getLastMessage = (userId)=> {
+    const chat = allChats.find(chat => chat.members.map(u => u._id).includes(userId));
+
+    console.log(userId, chat);
+    
+
+    if (!chat) {
+        return ''
+    }
+   console.log('who',  chat.sender == currentUser._id);
+   
+    if (chat?.lastMessage?.sender == currentUser._id){
+        
+        return `You: ${ chat?.lastMessage.text?.substring(0,25) }`
+    }else{
+        return  chat?.lastMessage.text?.substring(0,25);
+    }
+  }
+
+  
+
   const openChat = async (selected_user_id) => {
+    console.log(selected_user_id);
+    
     
     try {
         const chat = allChats.find(chat => {
-            return chat.members.includes(currentUser._id) && chat.members.includes(selected_user_id)
+            console.log(chat);
+            
+            return chat.members.map(u => u._id).includes(currentUser._id) && chat.members.map(u => u._id).includes(selected_user_id)
         })
         if(chat){
             dispatch(setSelectedChat(chat));
+            // getAllMessages(chat)
+            console.log("chat",chat);
+            getAllMessages(chat._id)
+            
         }
 
     } catch(err){
 
     }
+  }
+
+  const IsSelectedChat = (user) =>{
+    if(selectedChat){
+        return selectedChat.members.map(u => u._id).includes(user._id)
+    }
+    return false;
   }
 
 
@@ -56,22 +104,28 @@ const UserList = ({searchKey}) => {
         || user.lastName.toLowerCase().includes(searchKey.toLowerCase())) &&
         searchKey)
 
-          ||  allChats.some(chat => chat.members.includes(user._id))
+          ||  allChats.some(chat => {
+            console.log(chat.members);
+            
+            return chat.members?.map(m => m._id).includes(user._id)
+          })
     })
     .map(user => {
         return <div className="user-search-filter" onClick={()=> openChat(user._id)} key={user._id}>
-        <div className="filtered-user">
+        <div className={!IsSelectedChat(user) ? "filtered-user" : "selected-user"}>
             <div className="filter-user-display">
                  { user.avatarUrl && <img src={user.profilePic} alt="Profile Pic" className="user-profile-image"></img>}
-                 { !user.avatarUrl && <div className="user-default-profile-pic">
+                 { !user.avatarUrl && <div className={!IsSelectedChat(user) ? "user-default-avatar" : "selected-user-avatar"}>
                     {user.firstName.charAt(0).toUpperCase()}{user.lastName.charAt(0).toUpperCase()}
                 </div>}
+                
                 <div className="filter-user-details">
                     <div className="user-display-name">{user.firstName} {user.lastName }</div>
-                    <div className="user-display-email">{user.email}</div>
+                    <div className="user-display-email">{ getLastMessage(user._id) || user.email}</div>
                 </div>
+                <div className='last-message-timestamp'>{getLastMessageTimeStamp(user._id)}</div>
                 {
-                    !allChats.find(chat=> chat.members.includes(user._id)) &&
+                    !allChats.find(chat=> chat.members.map(u=> u._id).includes(user._id)) &&
 
                     <div className="user-start-chat">
                         <button className="user-start-chat-btn" onClick={()=> startNewChat(user._id)}>

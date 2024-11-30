@@ -47,6 +47,8 @@ function ProtectedRoute({children}){
         }
     }
 
+    
+
     const getCurrentUserAllChats = async () => {
         try {
             const [response, status_code] = await getAllChats(user);
