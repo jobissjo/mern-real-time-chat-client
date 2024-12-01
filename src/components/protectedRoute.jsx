@@ -28,7 +28,7 @@ function ProtectedRoute({children}){
         }
     }
 
-    const getAllUsersOfUser = async (user) => {
+    const getAllUsersOfUser = async () => {
         try {
             dispatch(showLoader());
             const [response, status_code] = await getAllUsers();

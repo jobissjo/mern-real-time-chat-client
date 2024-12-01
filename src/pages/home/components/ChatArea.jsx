@@ -5,10 +5,12 @@ import { createNewMessage } from '../../../apiCalls/message';
 import toast from 'react-hot-toast';
 import { getAllMessages } from '../../../apiCalls/message';
 import moment from 'moment';
+import { clearUnreadMessageCount } from '../../../apiCalls/chat';
+
 
 const ChatArea = () => {
-  const { selectedChat, user } = useSelector((state) => state.userReducer);
-  const selectedUser = selectedChat?.members.find(u => u._id != user._id);
+  const { selectedChat, user, allChats } = useSelector((state) => state.userReducer);
+  const selectedUser = selectedChat?.members?.find(u => u._id != user._id);
   const [message, setMessage] = useState('');
   const [allMessage, setAllMessage] = useState([]);
 
@@ -49,7 +51,10 @@ const ChatArea = () => {
 
 
   useEffect(() => {
-    getAllMessageOfSelectedChat(selectedChat._id)
+    getAllMessageOfSelectedChat(selectedChat._id);
+    if (selectedChat?.lastMessage?.sender !== user._id){
+      clearUnreadMessage();
+    }
   }, [selectedChat])
 
   const sendMessage = async () => {
@@ -66,6 +71,30 @@ const ChatArea = () => {
     } catch (err) {
       dispatch(hideLoader());
       toast.error(error.message)
+    }
+  }
+
+  const clearUnreadMessage = async () => {
+    try {
+      dispatch(showLoader());
+      const [response, status_code] = await clearUnreadMessageCount(selectedChat._id);
+      dispatch(hideLoader());
+
+      if (status_code === 200){
+        allChats.map(chat => {
+          if (chat._id === selectedChat._id){
+            return response.data;
+          }
+          return chat;
+        })
+      }else{
+        toast.error(error.message)
+      }
+
+    } catch (err) {
+
+      dispatch(hideLoader());
+      toast.error(err.message)
     }
   }
 
@@ -87,7 +116,10 @@ const ChatArea = () => {
                   </div>
                 <div className='message-timestamp' 
                 style={ isCurrentUserSender ? {float: 'right'}: {float: 'left'}}>
-                  {formatTime(message.timestamp)}
+                  {formatTime(message.timestamp)} 
+                  {isCurrentUserSender && message.read && 
+                  <i className='fa fa-check-circle' aria-hidden="true" 
+                    style={{color: '#e74c3c'}}></i>}
                 </div>
                 </div>
             })}

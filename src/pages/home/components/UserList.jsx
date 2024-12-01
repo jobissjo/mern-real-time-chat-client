@@ -5,6 +5,7 @@ import { createNewChat } from '../../../apiCalls/chat';
 import { showLoader, hideLoader } from '../../../redux/loaderSlice';
 import { setAllChats,  setSelectedChat } from '../../../redux/userSlice';
 import moment from 'moment';
+import { all } from 'axios';
 
 const UserList = ({searchKey}) => {
   const {allUsers, allChats, user:currentUser, selectedChat } =  useSelector(state => state.userReducer);
@@ -35,7 +36,7 @@ const UserList = ({searchKey}) => {
   }
 
   const getLastMessageTimeStamp = (userId) => {
-        const chat = allChats.find(chat => chat.members.map(m => m._id).includes(userId));
+        const chat = allChats.find(chat => chat?.members?.map(m => m._id).includes(userId));
 
         if(!chat || !chat?.lastMessage){
             return "";
@@ -45,7 +46,7 @@ const UserList = ({searchKey}) => {
     }
 
   const getLastMessage = (userId)=> {
-    const chat = allChats.find(chat => chat.members.map(u => u._id).includes(userId));
+    const chat = allChats?.find(chat => chat?.members?.map(u => u._id).includes(userId));
 
     console.log(userId, chat);
     
@@ -59,7 +60,7 @@ const UserList = ({searchKey}) => {
         
         return `You: ${ chat?.lastMessage.text?.substring(0,25) }`
     }else{
-        return  chat?.lastMessage.text?.substring(0,25);
+        return  chat?.lastMessage?.text?.substring(0,25);
     }
   }
 
@@ -90,27 +91,43 @@ const UserList = ({searchKey}) => {
 
   const IsSelectedChat = (user) =>{
     if(selectedChat){
-        return selectedChat.members.map(u => u._id).includes(user._id)
+        return selectedChat?.members?.map(u => u._id).includes(user._id)
     }
     return false;
+  };
+
+  const getUnreadMessageCount = (userId) => {
+    const chat = allChats?.find(chat => {
+        return chat?.members?.map(m => m._id).includes(userId)
+    });
+
+    if (chat?.unreadMessageCount && chat?.lastMessage?.sender !== currentUser._id){
+        return <div className='unread-message-count'>{chat.unreadMessageCount}</div>;
+    }else{
+        return "";
+    }
+  }
+
+  function getChatListData(){
+    if (searchKey === ""){
+        return allChats;
+    }
+    else{
+        allUsers.filter(user => {
+            return (user.firstName.toLowerCase().includes(searchKey.toLowerCase())
+                || user.lastName.toLowerCase().includes(searchKey.toLowerCase()))
+        })
+    }
   }
 
 
   return (
-    allUsers
-    .filter(user => {
-      return ( 
-        (user.firstName.toLowerCase().includes(searchKey.toLowerCase())
-        || user.lastName.toLowerCase().includes(searchKey.toLowerCase())) &&
-        searchKey)
-
-          ||  allChats.some(chat => {
-            console.log(chat.members);
-            
-            return chat.members?.map(m => m._id).includes(user._id)
-          })
-    })
-    .map(user => {
+    getChatListData()
+    .map(obj => {
+        let user = obj;
+        if (obj.members){
+            user = obj.members.find(mem=> mem._id !== currentUser._id)
+        }
         return <div className="user-search-filter" onClick={()=> openChat(user._id)} key={user._id}>
         <div className={!IsSelectedChat(user) ? "filtered-user" : "selected-user"}>
             <div className="filter-user-display">
@@ -123,9 +140,12 @@ const UserList = ({searchKey}) => {
                     <div className="user-display-name">{user.firstName} {user.lastName }</div>
                     <div className="user-display-email">{ getLastMessage(user._id) || user.email}</div>
                 </div>
-                <div className='last-message-timestamp'>{getLastMessageTimeStamp(user._id)}</div>
+                <div>
+                    { getUnreadMessageCount(user._id) }
+                    <div className='last-message-timestamp'>{getLastMessageTimeStamp(user._id)}</div>
+                </div>
                 {
-                    !allChats.find(chat=> chat.members.map(u=> u._id).includes(user._id)) &&
+                    !allChats.find(chat=> chat?.members?.map(u=> u._id).includes(user._id)) &&
 
                     <div className="user-start-chat">
                         <button className="user-start-chat-btn" onClick={()=> startNewChat(user._id)}>
