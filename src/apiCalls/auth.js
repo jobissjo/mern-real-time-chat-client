@@ -23,6 +23,6 @@ export const loginUser = async (user) => {
     }
     catch (error) {
 
-        return [error.response.data, error.status];
+        return [error.response?.data, error.status];
     }
 }

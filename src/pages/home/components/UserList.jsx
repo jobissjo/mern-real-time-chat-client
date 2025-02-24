@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useEffect } from 'react'
 import { useDispatch, useSelector } from 'react-redux';
 import toast from 'react-hot-toast';
 import { createNewChat } from '../../../apiCalls/chat';
@@ -6,8 +6,9 @@ import { showLoader, hideLoader } from '../../../redux/loaderSlice';
 import { setAllChats,  setSelectedChat } from '../../../redux/userSlice';
 import moment from 'moment';
 import { all } from 'axios';
+import store from '../../../redux/store';
 
-const UserList = ({searchKey}) => {
+const UserList = ({searchKey, socket, onlineUsers}) => {
   const {allUsers, allChats, user:currentUser, selectedChat } =  useSelector(state => state.userReducer);
 
   const dispatch = useDispatch();
@@ -41,7 +42,7 @@ const UserList = ({searchKey}) => {
         if(!chat || !chat?.lastMessage){
             return "";
         }else{
-            return moment(chat?.lastMessage?.createdAt).format('hh:mm A');
+            return moment(chat?.lastMessage?.createdAt, "DD-MM-YYYY HH:mm:ss").format('hh:mm A');
         }
     }
 
@@ -64,6 +65,33 @@ const UserList = ({searchKey}) => {
     }
   }
 
+  useEffect(()=> {
+    socket.off('message-count-updated').on('message-count-updated', (message)=> {
+        const selectedChat = store.getState().userReducer.selectedChat;
+        let allChats = store.getState().userReducer.allChats;
+
+        
+        if(message.ChatId != selectedChat?._id){
+            const updatedChats = allChats?.map((chat)=> {
+                if(chat._id === message.chatId) {
+                    return {
+                        ...chat, 
+                        unreadMessageCount: chat?.unreadMessageCount ? chat.unreadMessageCount + 1 : 1,
+                        lastMessage: message
+                    }
+                }
+                return chat;
+            });
+            allChats = updatedChats;
+
+            let latestChat = allChats.find(chat => chat._id === message.chatId);
+            let otherChats = allChats.filter(chat => chat._id !== message.chatId);
+
+            allChats = [latestChat, ...otherChats];
+        } 
+        dispatch(setAllChats(allChats));
+    })
+  }, [])
   
 
   const openChat = async (selected_user_id) => {
@@ -113,7 +141,9 @@ const UserList = ({searchKey}) => {
         return allChats;
     }
     else{
-        allUsers.filter(user => {
+        console.log(searchKey, "search key");
+        
+        return allUsers.filter(user => {
             return (user.firstName.toLowerCase().includes(searchKey.toLowerCase())
                 || user.lastName.toLowerCase().includes(searchKey.toLowerCase()))
         })
@@ -123,7 +153,7 @@ const UserList = ({searchKey}) => {
 
   return (
     getChatListData()
-    .map(obj => {
+    ?.map(obj => {
         let user = obj;
         if (obj.members){
             user = obj.members.find(mem=> mem._id !== currentUser._id)
@@ -131,8 +161,10 @@ const UserList = ({searchKey}) => {
         return <div className="user-search-filter" onClick={()=> openChat(user._id)} key={user._id}>
         <div className={!IsSelectedChat(user) ? "filtered-user" : "selected-user"}>
             <div className="filter-user-display">
-                 { user.avatarUrl && <img src={user.profilePic} alt="Profile Pic" className="user-profile-image"></img>}
-                 { !user.avatarUrl && <div className={!IsSelectedChat(user) ? "user-default-avatar" : "selected-user-avatar"}>
+                 { user.profilePic && <img src={user.profilePic} alt="Profile Pic" className="user-profile-image"
+                    style={onlineUsers.includes(user._id) ? {border: '3px solid #82e0aa'} : {} } ></img>}
+                 { !user.profilePic && <div className={!IsSelectedChat(user) ? "user-default-avatar" : "selected-user-avatar"}
+                    style={onlineUsers.includes(user._id) ? {border: '3px solid #82e0aa'} : {} }>
                     {user.firstName.charAt(0).toUpperCase()}{user.lastName.charAt(0).toUpperCase()}
                 </div>}
                 

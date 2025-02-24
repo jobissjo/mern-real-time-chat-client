@@ -24,7 +24,11 @@ const Login = () => {
       toast.success(response.message)
       setUser({email: '', password: ''})
       
-      navigate('/')
+      setTimeout(()=>{
+        console.log("try to navigate to home page");
+        
+        navigate('/')
+      },[1000])
     }
     else{
       toast.error(response.message)

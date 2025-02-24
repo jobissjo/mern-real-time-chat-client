@@ -19,4 +19,13 @@ const getAllUsers = async ()=> {
     }
 }
 
-export  {getLoggedUser, getAllUsers};
+const updateProfilePicture = async (image)=> {
+    try {
+        const response = await axiosInstance.put("/api/user/update-profile-pic", {profilePic:image});
+        return [response.data, response.status]; 
+    }catch (error) {
+        return [error.response.data, error.status];
+    }
+}
+
+export  {getLoggedUser, getAllUsers, updateProfilePicture};

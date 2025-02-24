@@ -1,4 +1,5 @@
 import { useEffect } from "react";
+import PropTypes from 'prop-types';
 import  {useNavigate} from "react-router-dom"
 import { getLoggedUser, getAllUsers } from "../apiCalls/user";
 import { useDispatch, useSelector } from "react-redux";
@@ -35,7 +36,7 @@ function ProtectedRoute({children}){
             dispatch(hideLoader());
             if (status_code === 200){
                 // handle data
-                console.log('dsffff', response.data);
+                console.log('dsffff', response);
                 
                 dispatch(setAllUsers(response.data));
             }
@@ -78,5 +79,8 @@ function ProtectedRoute({children}){
         { children }
     </div>)
 }
+ProtectedRoute.propTypes = {
+    children: PropTypes.node.isRequired,
+};
 
 export default ProtectedRoute;

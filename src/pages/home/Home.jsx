@@ -1,31 +1,34 @@
-import React, { useEffect } from 'react'
+import React, { useEffect, useState } from 'react'
 import Header from './components/Header'
 import Sidebar from './components/Sidebar'
 import ChatArea from './components/ChatArea'
 import { useSelector } from 'react-redux';
 import { io } from 'socket.io-client';
 
+const socket = io('http://localhost:5000');
+
 const Home = () => {
-  const { selectedChat } = useSelector((state) => state.userReducer);
-  const socket = io('http://localhost:5000');
+  const { user, selectedChat } = useSelector((state) => state.userReducer);
+  const [onlineUsers, setOnlineUsers] = useState([]);
+  
 
   useEffect(()=> {
-    socket.emit('send-message-all', {
-      text: 'hi from jobi'
-    });
-    socket.on("send-message-by-server", (data)=> {
-      console.log(data);
-      
-    })
-  }, [])
+    if(user?._id){
+      socket.emit('join-room', user._id);
+      socket.emit('user-login', user._id);
+      socket.on('online-users', usersData=>{
+        setOnlineUsers(usersData);
+      })
+    }
+  }, [user])
 
   return (
     <div className="home-page">
-      <Header />
+      <Header socket={socket} />
       <div className="main-content">
-          <Sidebar/>
+          <Sidebar socket={socket} onlineUsers={onlineUsers} />
           
-          {selectedChat && <ChatArea />}
+          {selectedChat && <ChatArea socket={socket} />}
       </div>
   </div>
   )
