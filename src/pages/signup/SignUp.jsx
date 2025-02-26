@@ -1,8 +1,9 @@
 import React, {useState} from 'react'
-import { Link } from 'react-router-dom';
-import { signupUser } from '../../apiCalls/auth';
+import { Link, useNavigate } from 'react-router-dom';
+import { signupUser, verifyAccount } from '../../apiCalls/auth';
 import { useDispatch } from 'react-redux';
 import { hideLoader, showLoader } from '../../redux/loaderSlice';
+import toast from 'react-hot-toast';
 
 
 const SignUp = () => {
@@ -14,15 +15,18 @@ const SignUp = () => {
     password: '',
   });
   const dispatch = useDispatch()
+  const navigate = useNavigate()
 
   async function onFormSubmit(event){
     event.preventDefault();
     try {
       dispatch(showLoader());
-      const response = await signupUser(user);
+      const [response, status_code] = await verifyAccount(user.email);
       dispatch(hideLoader());
-      if (response.success){
-        alert(response.message + "success response");
+      if (status_code === 200){
+        toast.success(response.message);
+        navigate('/verify-account', { state: { user } });
+
       }
       else{
         alert(response.message);
@@ -34,7 +38,6 @@ const SignUp = () => {
 
   }
 
-  // console.log(user);
 
   return (
     <div className="container">

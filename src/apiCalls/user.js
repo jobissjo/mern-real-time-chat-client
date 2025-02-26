@@ -12,6 +12,7 @@ const getLoggedUser = async ()=> {
 const getAllUsers = async ()=> {
     try {
         const response = await axiosInstance.get("/api/user/get-all-users");
+         console.log(response, 'get all users');
                 
         return [response.data, response.status];
     }catch (error) {

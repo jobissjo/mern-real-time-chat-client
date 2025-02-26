@@ -239,6 +239,92 @@ i{
   font-size: 13px;
 
 }
+.notification-container {
+  position: relative;
+}
+.notification-icon {
+  padding-top: 10px;
+  padding-right: 15px;
+  cursor: pointer;
+  position: relative;
+}
+.notification-icon i {
+  font-size: 20px;
+  color: #28282b;
+}
+
+.notification-dropdown {
+  position: absolute;
+  top: 40px;
+  right: 0;
+  width: 250px;
+  background-color: #fdedec;
+  border-radius: 5px;
+  box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+  z-index: 10;
+  padding: 10px;
+}
+
+.notification-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-weight: bold;
+  padding-bottom: 5px;
+  border-bottom: 1px solid #ddd;
+  
+}
+
+.notification-header button {
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: blue;
+}
+
+.notification-list {
+  list-style: none;
+  padding: 10px 0;
+  max-height: 200px;
+  overflow-y: auto;
+}
+
+.notification-list li {
+  padding: 5px 10px;
+  border-bottom: 1px solid #ddd;
+  cursor: pointer;
+}
+
+.notification-list .unread {
+  color: #131313;
+  font-size: 14px;
+}
+
+.notification-list .read {
+  color: #aaa;
+  font-size: 14px;
+}
+
+.no-notifications {
+  text-align: center;
+  color: gray;
+  padding: 10px 0;
+}
+
+.notification-footer {
+  display: flex;
+  justify-content: space-between;
+  padding-top: 5px;
+  border-top: 1px solid #ddd;
+}
+
+.notification-footer button {
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: blue;
+  padding: 5px;
+}
 
 /*******************************************************
 ********CSS FOR SIDEBAR COMPONENT************************
@@ -533,6 +619,7 @@ i{
   padding: 20px 20px;
   border-radius: 10px;
   box-shadow: rgba(0, 0, 0, 0.35) 0px 5px 15px;
+  background-color: #fdedec;
 }
 .profile-pic-container{
   width: 30%;

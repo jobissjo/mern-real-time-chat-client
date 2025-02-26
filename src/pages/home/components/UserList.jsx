@@ -7,6 +7,7 @@ import { setAllChats,  setSelectedChat } from '../../../redux/userSlice';
 import moment from 'moment';
 import { all } from 'axios';
 import store from '../../../redux/store';
+import { sendFriendRequest } from '../../../apiCalls/friendRequest';
 
 const UserList = ({searchKey, socket, onlineUsers}) => {
   const {allUsers, allChats, user:currentUser, selectedChat } =  useSelector(state => state.userReducer);
@@ -49,17 +50,21 @@ const UserList = ({searchKey, socket, onlineUsers}) => {
   const getLastMessage = (userId)=> {
     const chat = allChats?.find(chat => chat?.members?.map(u => u._id).includes(userId));
 
-    console.log(userId, chat);
-    
 
+    
     if (!chat) {
         return ''
     }
    console.log('who',  chat.sender == currentUser._id);
+
+   if(!chat?.lastMessage){
+    return ""
+
+   }
    
-    if (chat?.lastMessage?.sender == currentUser._id){
+    else if (chat?.lastMessage?.sender == currentUser._id){
         
-        return `You: ${ chat?.lastMessage.text?.substring(0,25) }`
+        return `You: ${ chat?.lastMessage?.text?.substring(0,25) }`
     }else{
         return  chat?.lastMessage?.text?.substring(0,25);
     }
@@ -141,12 +146,25 @@ const UserList = ({searchKey, socket, onlineUsers}) => {
         return allChats;
     }
     else{
-        console.log(searchKey, "search key");
+        console.log(searchKey, "search key", allUsers, "all users");
         
         return allUsers.filter(user => {
             return (user.firstName.toLowerCase().includes(searchKey.toLowerCase())
                 || user.lastName.toLowerCase().includes(searchKey.toLowerCase()))
         })
+    }
+  }
+
+  const sendFrdRequest = async (receiverId)=> {
+    try{
+        dispatch(showLoader());
+        const response = await sendFriendRequest(receiverId);
+        toast.success(response.message);
+        dispatch(hideLoader());
+    }
+    catch(err){
+        dispatch(hideLoader());
+        toast.error(err.message);
     }
   }
 
@@ -177,7 +195,16 @@ const UserList = ({searchKey, socket, onlineUsers}) => {
                     <div className='last-message-timestamp'>{getLastMessageTimeStamp(user._id)}</div>
                 </div>
                 {
+                    !user?.friends?.map(friend=> u._id).includes(currentUser._id) &&
+                    <div className="user-start-chat">
+                        <button className="user-start-chat-btn" onClick={()=> sendFrdRequest(user._id)} style={{cursor: 'pointer'}}>
+                            <i className="fa fa-user-plus" aria-hidden="true"></i>
+                        </button>
+                    </div>
+                }
+                {
                     !allChats.find(chat=> chat?.members?.map(u=> u._id).includes(user._id)) &&
+                    user?.friends?.map(u=> u._id).includes(currentUser._id) &&
 
                     <div className="user-start-chat">
                         <button className="user-start-chat-btn" onClick={()=> startNewChat(user._id)}>

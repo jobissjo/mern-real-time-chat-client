@@ -1,4 +1,4 @@
-import { axiosInstance } from ".";
+import { axiosInstance } from "./index";
 
 const createNewMessage = async (message) => {
     try {

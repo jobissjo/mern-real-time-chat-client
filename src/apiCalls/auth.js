@@ -5,11 +5,22 @@ export const signupUser = async (user) => {
         const response = await axiosInstance.post("/api/auth/signup", user);
         console.log(response);
         
-        return response.data;
+        return [response.data, response.status];
     } catch (error) {
         console.log(error);
         
-        return error.message;
+        return [error.message, error.status];
+    }
+}
+
+export const verifyAccount = async (email) => {
+    try {
+        const response = await axiosInstance.post("/api/auth/verify-email", { email });
+        
+        return [response.data, response.status];
+    } catch (error) {
+      
+        return [error.response?.data, error.status];
     }
 }
 
