@@ -73,9 +73,9 @@ const Header = ({socket}) => {
   return (
     <div className="app-header">
     <div className="app-logo">
-        <i className="fa fa-comments" aria-hidden="true"></i>
+        <i className="fa fa-comments" aria-hidden="true" onClick={()=> {navigate('/')}} style={{cursor:'pointer'}}></i>
           Quick Chat
-        </div>
+    </div>
     <div className="app-user-profile">
       <div className="notification-container">
         <div className='notification-icon' onClick={()=> setShowNotification(!showNotification)}>

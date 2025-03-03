@@ -1,0 +1,267 @@
+
+
+/*///////////////////////////////////////////////////////////////
+//////////////////// PROFILE PAGE DESIGN //////////////////////
+///////////////////////////////////////////////////////////////*/
+
+.profile-container {
+    display: flex;
+    flex-direction: column;
+    height: 100vh;
+  }
+  
+  .profile-layout {
+    display: flex;
+    flex: 1;
+  }
+  
+  .profile-sidebar {
+    width: 250px;
+    background-color: #f8f9fa;
+    padding: 20px;
+    height: 100vh;
+  }
+  
+  .profile-content {
+    flex: 1;
+    padding: 20px;
+    display: flex;
+    /* flex-direction: column; */
+    justify-content: space-evenly;
+  }
+  .profile-dummy-container{
+    width: 30%;
+  }
+
+/*///////////////////////////////////////////////////////////////
+//////////////////// FRIEND LIST DESIGN //////////////////////
+///////////////////////////////////////////////////////////////*/
+
+.friends-container {
+    display: flex;
+    flex-direction: column;
+    height: 100vh;
+    width: 100%;
+}
+
+.friends-layout {
+    display: flex;
+    flex: 1;
+}
+
+
+.friends-content {
+    flex: 1;
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    align-items: top;
+}
+
+.friend-list {
+    list-style: none;
+    padding: 0;
+    width: 70%;
+}
+
+.friend-item {
+    display: flex;
+    align-items: center;
+    padding: 10px;
+    background: #fff;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    margin-bottom: 10px;
+    transition: background 0.3s ease-in-out;
+}
+
+.friend-item:hover {
+    background: #f1f1f1;
+}
+
+.friend-icon {
+    font-size: 24px;
+    margin-right: 10px;
+    color: #555;
+}
+
+.friend-info {
+    display: flex;
+    flex-direction: column;
+}
+
+.friend-name {
+    font-size: 16px;
+    font-weight: bold;
+}
+
+.friend-status {
+    font-size: 14px;
+    color: grey;
+}
+
+.friend-status.online {
+    color: green;
+}
+
+.friend-status.offline {
+    color: red;
+}
+
+/*////////////////////////////////////////// 
+///////////////////////////////// */
+
+.notifications-container {
+    display: flex;
+    flex-direction: column;
+    height: 100vh;
+    width: 100%;
+}
+
+.notifications-layout {
+    display: flex;
+    flex: 1;
+}
+
+
+
+.notifications-content {
+    flex: 1;
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+}
+
+.notification-header {
+    display: flex;
+    justify-content: space-between;
+    min-width: 100%;
+    align-items: center;
+    margin-bottom: 20px;
+}
+
+.mark-all-btn {
+    padding: 8px 12px;
+    background-color: #007bff;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 14px;
+}
+
+.mark-all-btn:hover {
+    background-color: #0056b3;
+}
+
+.profile-notification-list {
+    list-style: none;
+    padding: 0;
+    width: 100%;
+}
+
+.notification-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 15px;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    margin-bottom: 10px;
+    transition: background 0.3s ease-in-out;
+    width: 80%;
+}
+
+.notification-item.unread {
+    background-color: #f8d7da;
+}
+
+.notification-item.read {
+    background-color: #e9ecef;
+}
+
+.notification-text {
+    font-size: 16px;
+    flex-grow: 1;
+    margin: 5px 10px;
+}
+
+.mark-read-btn {
+    padding: 5px 10px;
+    background-color: #28a745;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 12px;
+}
+
+.mark-read-btn:hover {
+    background-color: #218838;
+}
+
+/*////////////////////////////////////////////////////////////////
+/////////////// PREFERENCE COMPONENT DESIGN /////////////////////
+///////////////////////////////////////////////////////////////*/
+
+/* Shared Layout */
+.preferences-container {
+    display: flex;
+    flex-direction: column;
+    height: 100vh;
+}
+
+.preferences-layout {
+    display: flex;
+    flex: 1;
+}
+
+.preferences-content {
+    flex: 1;
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    max-width: 400px;
+}
+
+/* Preference Items */
+.preference-item {
+    display: flex;
+    justify-content: space-between;
+    width: 100%;
+    margin-bottom: 15px;
+    padding: 10px;
+    background: #fff;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    align-items: center;
+}
+
+/* Toggle Button */
+.toggle-btn {
+    padding: 6px 12px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 14px;
+    color: white;
+}
+
+.toggle-btn.enabled {
+    background-color: #28a745;
+}
+
+.toggle-btn.disabled {
+    background-color: #dc3545;
+}
+
+/* Dropdown */
+.dropdown {
+    padding: 6px 10px;
+    border-radius: 5px;
+    border: 1px solid #ccc;
+    font-size: 14px;
+    cursor: pointer;
+}
