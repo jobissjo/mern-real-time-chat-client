@@ -21,19 +21,18 @@ const SignUp = () => {
     event.preventDefault();
     try {
       dispatch(showLoader());
-      const [response, status_code] = await verifyAccount(user.email);
+      const [response, status_code] = await verifyAccount(user.email, user.firstName);
       dispatch(hideLoader());
       if (status_code === 200){
         toast.success(response.message);
         navigate('/verify-account', { state: { user } });
-
       }
       else{
         alert(response.message);
       }
     }
     catch (error) {
-      alert(response.message);
+      alert(error.message);
     }
 
   }

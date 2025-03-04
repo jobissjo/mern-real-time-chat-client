@@ -13,9 +13,9 @@ export const signupUser = async (user) => {
     }
 }
 
-export const verifyAccount = async (email) => {
+export const verifyAccount = async (email, firstName) => {
     try {
-        const response = await axiosInstance.post("/api/auth/verify-email", { email });
+        const response = await axiosInstance.post("/api/auth/verify-email", { email, firstName });
         
         return [response.data, response.status];
     } catch (error) {
@@ -36,4 +36,8 @@ export const loginUser = async (user) => {
 
         return [error.response?.data, error.status];
     }
+}
+
+export const changeCurrentPassword = async (changePwdData) => {
+    return await axiosInstance.post("/api/auth/change-password", changePwdData);
 }

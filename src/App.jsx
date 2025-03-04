@@ -11,7 +11,9 @@ import VerifyAccount from "./pages/signup/VerifyAccount.jsx";
 import FriendList from "./pages/profile/FriendList.jsx";
 import NotificationList from "./pages/profile/NotificationList.jsx";
 import PreferenceList from "./pages/profile/PreferenceList.jsx";
-
+import ProfileSecurity from "./pages/profile/ProfileSecurity.jsx";
+import "bootstrap/dist/css/bootstrap.min.css";
+import "bootstrap/dist/js/bootstrap.bundle.min.js";
 function App() {
   const {loader} = useSelector(state=> state.loaderReducer)
   return (
@@ -28,6 +30,7 @@ function App() {
           <Route path="/friends" element={<FriendList/>}></Route>
           <Route path="/notifications" element={<NotificationList/>}></Route>
           <Route path="/preferences" element={<PreferenceList/>}></Route>
+          <Route path="/security" element={<ProfileSecurity/>}></Route>
         </Routes>
       </BrowserRouter>
     </div>

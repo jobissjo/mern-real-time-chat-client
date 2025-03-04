@@ -5,9 +5,13 @@ export const getAllNotification = async ()=> {
 }
 
 export const readNotification = async (notificationId)=> {
-    return await axiosInstance.put(`/api/notification/read-notification/${notificationId}`);
+    return await axiosInstance.put(`/api/notification/read-notification`, { notificationId });
 }
 
 export const clearAllNotificationOfUser = async ()=> {
     return await axiosInstance.put("/api/notification/clear-all-notifications");
+}
+
+export const deleteAllNotificationsOfUser = async ()=> {
+    return await axiosInstance.put("/api/notification/delete-all-notifications");
 }
