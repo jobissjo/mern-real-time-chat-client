@@ -36,6 +36,48 @@
 /*///////////////////////////////////////////////////////////////
 //////////////////// FRIEND LIST DESIGN //////////////////////
 ///////////////////////////////////////////////////////////////*/
+.friend-request-list {
+    list-style: none;
+    padding: 0;
+    width: 70%;
+}
+
+.friend-request-actions {
+    display: flex;
+    gap: 10px;
+}
+.friend-actions {
+    display: flex;
+    gap: 10px;
+}
+
+.accept-btn, .reject-btn {
+    padding: 5px 10px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 12px;
+}
+
+.accept-btn {
+    background-color: #28a745;
+    color: white;
+}
+
+.accept-btn:hover {
+    background-color: #218838;
+}
+
+.reject-btn {
+    background-color: #dc3545;
+    color: white;
+}
+
+.reject-btn:hover {
+    background-color: #c82333;
+}
+
+
 
 .friends-container {
     display: flex;
@@ -64,9 +106,35 @@
     width: 70%;
 }
 
+.friend-request-item {
+    display: flex;
+    justify-content: space-between; /* Push left and right sections apart */
+    align-items: center;
+    padding: 10px;
+    background: #fff;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    margin-bottom: 10px;
+    transition: background 0.3s ease-in-out;
+}
+
+.friend-request-item:hover {
+    background: #f1f1f1;
+}
+
+.friend-request-info {
+    display: flex;
+    align-items: center;
+    gap: 10px; /* Add spacing between icon and text */
+}
+.friend-request-name {
+    font-size: 16px;
+    font-weight: bold;
+}
 .friend-item {
     display: flex;
     align-items: center;
+    
     padding: 10px;
     background: #fff;
     border-radius: 8px;

@@ -18,8 +18,6 @@ const Header = ({socket}) => {
     function getInitials(){
         return user.firstName?.toUpperCase().charAt(0) + user.lastName?.toUpperCase().charAt(0);
     }
-    console.log(user);
-
     const logOut = async ()=> {
       localStorage.removeItem('token')
       navigate('/login');

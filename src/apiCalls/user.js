@@ -29,4 +29,8 @@ const updateProfilePicture = async (image)=> {
     }
 }
 
-export  {getLoggedUser, getAllUsers, updateProfilePicture};
+
+const getFriendsList = async ()=> {
+    return await axiosInstance.get("/api/user/get-friends-list");
+}
+export  {getLoggedUser, getAllUsers, updateProfilePicture, getFriendsList};

@@ -8,6 +8,7 @@ import moment from 'moment';
 import { all } from 'axios';
 import store from '../../../redux/store';
 import { sendFriendRequest } from '../../../apiCalls/friendRequest';
+import { current } from '@reduxjs/toolkit';
 
 const UserList = ({searchKey, socket, onlineUsers}) => {
   const {allUsers, allChats, user:currentUser, selectedChat } =  useSelector(state => state.userReducer);
@@ -50,12 +51,9 @@ const UserList = ({searchKey, socket, onlineUsers}) => {
   const getLastMessage = (userId)=> {
     const chat = allChats?.find(chat => chat?.members?.map(u => u._id).includes(userId));
 
-
-    
     if (!chat) {
         return ''
     }
-   console.log('who',  chat.sender == currentUser._id);
 
    if(!chat?.lastMessage){
     return ""
@@ -123,6 +121,8 @@ const UserList = ({searchKey, socket, onlineUsers}) => {
   }
 
   const IsSelectedChat = (user) =>{
+    console.log("users------------------:", currentUser);
+    
     if(selectedChat){
         return selectedChat?.members?.map(u => u._id).includes(user._id)
     }
@@ -158,13 +158,17 @@ const UserList = ({searchKey, socket, onlineUsers}) => {
   const sendFrdRequest = async (receiverId)=> {
     try{
         dispatch(showLoader());
+        console.log('vvvvvvvvvvvvvvvvvv');
+        
         const response = await sendFriendRequest(receiverId);
-        toast.success(response.message);
+        toast.success(response.data.message);
         dispatch(hideLoader());
+        console.log(response, 'rdddddddddddddddddddres');
+        
     }
     catch(err){
+        toast.error(err.response?.data?.message ?? 'Error in sendFriend Request');
         dispatch(hideLoader());
-        toast.error(err.message);
     }
   }
 
@@ -195,7 +199,7 @@ const UserList = ({searchKey, socket, onlineUsers}) => {
                     <div className='last-message-timestamp'>{getLastMessageTimeStamp(user._id)}</div>
                 </div>
                 {
-                    !user?.friends?.map(friend=> u._id).includes(currentUser._id) &&
+                    !currentUser?.friends?.map(friend=> friend._id).includes(user._id) &&
                     <div className="user-start-chat">
                         <button className="user-start-chat-btn" onClick={()=> sendFrdRequest(user._id)} style={{cursor: 'pointer'}}>
                             <i className="fa fa-user-plus" aria-hidden="true"></i>

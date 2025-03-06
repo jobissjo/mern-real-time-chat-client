@@ -53,10 +53,7 @@ const PreferenceList = () => {
         fetchUserPreference();
     }, []);
 
-    useEffect(()=> {
-        updatePreferences({ isDarkMode, isNotification, language });
-        
-    }, [isDarkMode, isNotification, language])
+    
 
     return (
         <div className="preferences-container">
@@ -71,7 +68,7 @@ const PreferenceList = () => {
                         <button 
                             className={`toggle-btn ${isDarkMode ? 'enabled' : 'disabled'}`} 
                             onClick={() => {
-                                setIsDarkMode(prev => !prev)
+                                updatePreferences({isDarkMode: !isDarkMode})
                             }}
                         >
                             {isDarkMode ? 'Enabled' : 'Disabled'}
