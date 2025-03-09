@@ -3,13 +3,24 @@ import { useSelector } from 'react-redux'
 import { useNavigate } from 'react-router-dom';
 import { clearAllNotificationOfUser, getAllNotification, readNotification } from '../../../apiCalls/notification';
 import toast from 'react-hot-toast';
+import { Notifications as NotificationsIcon,  PowerSettingsNew as LogoutIcon,
+   Brightness4 as DarkModeIcon,Chat as ChatIcon,
+} from "@mui/icons-material";
+import { getUserPreferences, updateUserPreferences } from '../../../apiCalls/preference';
+import {
+  AppBar, Toolbar,  Typography,  IconButton,
+  Badge, Menu,   MenuItem,   Switch,
+  Avatar, Box,   Divider, ListItemIcon, ListItemText,
+} from "@mui/material";
 
 const Header = ({socket}) => {
     const { user } = useSelector(state => state.userReducer);
     const [showNotification, setShowNotification] = useState(false);
     const [notifications, setNotifications] = useState([]);
     const [unreadNotificationCount, setUnreadNotificationCount] = useState(0);
-    const navigate = useNavigate()
+    const navigate = useNavigate();
+    const [darkMode, setDarkMode] = useState(false);
+    const [anchorEl, setAnchorEl] = useState(null);
     function getFullName(){
         return user.firstName + " " + user.lastName;
     }
@@ -24,6 +35,7 @@ const Header = ({socket}) => {
       socket.emit('user-logout', user._id)
         
     }
+    // GET NOTIFICATION
     const getNotification = async ()=> {
       try{
         let response = await getAllNotification()
@@ -35,8 +47,24 @@ const Header = ({socket}) => {
         console.log(error)
       }
     }
+    // UPDATE DARK THEME
+    const updatePreference = async ()=> {
+      try{
+        let response = await updateUserPreferences({isDarkMode: !darkMode})
+        if(response.status === 200){
+          toast.success(response.data?.message)
+          getPreference()
+          
+        }
+      }
+      catch(error){
+        toast.error(error.message)
+      }
+    }
+
     useEffect(()=> {
-      getNotification()
+      getNotification();
+      getPreference();
     }, [showNotification, unreadNotificationCount])
 
     const markReadNotification = async (notificationId)=> {
@@ -48,11 +76,25 @@ const Header = ({socket}) => {
         else{
           toast.error(response.error.message)
         }
-        
       }
       catch(error){
         console.log(error)
       } 
+    }
+
+    // FETCH USER PREFERENCE  
+    const getPreference = async () => {
+      try{
+        let response = await getUserPreferences()
+        if(response.status === 200){
+          setDarkMode(response.data?.data?.isDarkMode)
+        }
+        else{
+          toast.error(response.error.message)
+        }
+      }catch(error){
+        console.error('Error fetching preferences:', error);
+      }
     }
 
     const clearAllNotifications = async () => {
@@ -60,7 +102,8 @@ const Header = ({socket}) => {
         let response = await clearAllNotificationOfUser()
         if(response.status === 200){
           toast.success(response.data?.message ?? 'All notifications cleared')
-          setUnreadNotificationCount(0)
+          setUnreadNotificationCount(0);
+          getNotification();
         }
       }
       catch(error){
@@ -75,6 +118,11 @@ const Header = ({socket}) => {
           Quick Chat
     </div>
     <div className="app-user-profile">
+        <Switch
+          checked={darkMode}
+          onChange={() => updatePreference()}
+          color="default"
+        />
       <div className="notification-container">
         <div className='notification-icon' onClick={()=> setShowNotification(!showNotification)}>
           <i className="fa fa-bell" aria-hidden="true"></i>

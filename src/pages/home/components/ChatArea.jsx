@@ -25,19 +25,15 @@ const ChatArea = ({socket}) => {
   const getAllMessageOfSelectedChat = async (chatId) => {
     try {
 
-      dispatch(showLoader());
       const [response, status_code] = await getAllMessages(selectedChat._id)
-      dispatch(hideLoader());
       if (status_code === 200) {
         console.log("message response", response.data);
         setAllMessage(response.data);
       }
       else {
-        dispatch(hideLoader());
         setAllMessage([])
       }
     } catch (err) {
-      dispatch(hideLoader());
       console.warn("error occurred")
     }
   }

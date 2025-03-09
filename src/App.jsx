@@ -27,10 +27,10 @@ function App() {
           <Route path="/signup" element={<SignUp/>}></Route>
           <Route path="/verify-account" element={<VerifyAccount/>}></Route>
           <Route path="/profile" element={<ProtectedRoute><Profile/></ProtectedRoute>}></Route>
-          <Route path="/friends" element={<FriendList/>}></Route>
-          <Route path="/notifications" element={<NotificationList/>}></Route>
-          <Route path="/preferences" element={<PreferenceList/>}></Route>
-          <Route path="/security" element={<ProfileSecurity/>}></Route>
+          <Route path="/friends" element={ <ProtectedRoute><FriendList/></ProtectedRoute>}></Route>
+          <Route path="/notifications" element={<ProtectedRoute><NotificationList/></ProtectedRoute>}></Route>
+          <Route path="/preferences" element={<ProtectedRoute><PreferenceList/></ProtectedRoute>}></Route>
+          <Route path="/security" element={<ProtectedRoute><ProfileSecurity/></ProtectedRoute>}></Route>
         </Routes>
       </BrowserRouter>
     </div>

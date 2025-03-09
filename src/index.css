@@ -88,7 +88,7 @@ body{
   border: none;
   padding: 8px 15px;
   width: 100%;
-  margin-top: 10px;
+  margin-top: 5px;
 }
 
 .card_terms {
@@ -370,6 +370,79 @@ i{
   cursor: pointer;
   background-color: white;
 }
+
+.user-list-container {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+
+/* Chat List */
+.chat-list {
+  flex: 1;
+  overflow-y: auto;
+  max-height: 400px;
+  min-height: 200px;
+}
+
+/* Friend List */
+.friend-list-container {
+  margin-top: 5px; /* Reduce top margin */
+  /* background: #f8f8f8; */
+  border-radius: 5px;
+  padding: 5px; /* Reduce padding */
+}
+
+
+.friend-list-header {
+  padding: 10px;
+  cursor: pointer;
+  display: flex;
+  justify-content: space-between;
+  font-weight: bold;
+  background: #fdedec;
+  border-radius: 5px;
+}
+
+.friend-list {
+  max-height: 200px;
+  overflow-y: auto;
+  padding: 10px;
+}
+
+.friend-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 8px;
+  border-bottom: 1px solid #ccc;
+}
+
+.friend-profile-image,
+.friend-avatar {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+}
+
+.friend-avatar {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background: #bbb;
+  color: white;
+  font-weight: bold;
+}
+
+.start-chat-btn {
+  padding: 5px 10px;
+  background: #007bff;
+  color: white;
+  border: none;
+  cursor: pointer;
+  border-radius: 3px;
+}
+
 
 /*******************************************************
 ********CSS FOR SELECTED USER***************************

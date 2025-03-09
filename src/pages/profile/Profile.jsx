@@ -7,6 +7,7 @@ import toast from 'react-hot-toast';
 import ProfileSidebar from './ProfileSidebar';
 import ProfileHeader from './ProfileHeader';
 import './profile.css'
+import {Box, Button, List, ListItem, Avatar,} from '@mui/material'
 
 
 const Profile = () => {
@@ -66,7 +67,7 @@ const Profile = () => {
                         {image ? (
                             <img src={image} alt="Profile Pic" className="user-profile-pic-upload" />
                         ) : (
-                            <div className="user-default-profile-avatar">{getInitials()}</div>
+                            <img src='images/profile.png' className="user-profile-pic-upload" />
                         )}
                     </div>
 

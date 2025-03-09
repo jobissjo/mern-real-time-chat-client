@@ -7,7 +7,7 @@ const ProfileHeader = () => {
     const logOut = async () => {
         localStorage.removeItem('token')
         navigate('/login');
-        socket.emit('user-logout', user._id)
+        // socket.emit('user-logout', user._id)
 
     }
     return (

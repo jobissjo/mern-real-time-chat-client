@@ -9,6 +9,7 @@ const PreferenceList = () => {
     const [isDarkMode, setIsDarkMode] = useState(false);
     const [isNotification, setIsNotification] = useState(true);
     const [language, setLanguage] = useState('en');
+    const [isLastSeen, setIsLastSeen] = useState(true);
 
 
 
@@ -102,6 +103,21 @@ const PreferenceList = () => {
                             <option value="gr">German</option>
                             <option value="en">English</option>
                         </select>
+                    </div>
+                    <div className="preference-item">
+                        <label>Last Seen <span style={{fontSize:'12px', marginLeft: '1rem', color: 'red'}} >If you turn off you cannot able to see other last seen</span></label>
+                        <button id=''
+                            className={`toggle-btn ${isLastSeen ? 'enabled' : 'disabled'}`} 
+                            onClick={()=> setIsLastSeen((prevVal)=> !prevVal)}>
+                            {isLastSeen ? 'Show' : 'Hide'}
+                        </button>
+
+                    </div>
+                    {/* Block Users */}
+                    <div className='preference-item' style={{cursor: 'pointer'}}>
+                        <label onClick={()=> {console.log("need to redirect")}}>Blocked User</label>
+
+
                     </div>
                 </div>
             </div>
