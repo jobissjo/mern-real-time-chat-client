@@ -51,7 +51,7 @@ const Login = () => {
       else {
         console.log(response);
         
-        toast.error(response.message)
+        toast.error(response?.message)
       }
     }, 1000)
 

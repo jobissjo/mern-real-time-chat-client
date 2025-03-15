@@ -31,7 +31,7 @@ export const loginUser = async (user) => {
     catch (error) {
         console.log(error, 'error of log');
         
-        return [error.response?.data, error.status];
+        return [error, error.status];
     }
 }
 
