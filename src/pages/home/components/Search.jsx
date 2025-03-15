@@ -1,13 +1,31 @@
-import React from 'react'
+import React from 'react';
+import PropTypes from 'prop-types';
+import { TextField, InputAdornment } from '@mui/material';
+import SearchIcon from '@mui/icons-material/Search';
 
-const Search = ({searchKey, setSearchKey}) => {
+const Search = ({ searchKey, setSearchKey }) => {
   return (
-    <div className="user-search-area">
-        <input type="text" className="user-search-text" value={searchKey}
-         onChange={(e) => setSearchKey(e.target.value)} />
-        <i className="fa fa-search user-search-btn" aria-hidden="true"></i>
-    </div>
-  )
-}
+    <TextField
+      variant="outlined"
+      fullWidth
+      placeholder="Search..."
+      value={searchKey}
+      onChange={(e) => setSearchKey(e.target.value)}
+      slots={{
+        endAdornment: InputAdornment,
+      }}
+      slotProps={{
+        endAdornment: {
+          position: 'end',
+          children: <SearchIcon />,
+        },
+      }}
+    />
+  );
+};
+Search.propTypes = {
+  searchKey: PropTypes.string.isRequired,
+  setSearchKey: PropTypes.func.isRequired,
+};
 
 export default Search;

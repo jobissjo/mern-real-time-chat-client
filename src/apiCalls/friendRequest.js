@@ -8,8 +8,8 @@ export const acceptFriendRequest = async (requestId)=> {
     return await axiosInstance.put("/api/friend/accept-friend-request", {requestId});
 }
 
-export const rejectFriendRequest = async (senderId)=> {
-    return await axiosInstance.post("/api/friend/reject-friend-request", {senderId});
+export const rejectUserFriendRequest = async (requestId)=> {
+    return await axiosInstance.post("/api/friend/reject-friend-request", {requestId});
 }
 
 export const getAllFriendRequests = async ()=> {

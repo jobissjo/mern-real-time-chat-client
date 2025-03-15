@@ -12,6 +12,22 @@ body{
   overflow-y: hidden;
 }
 
+:root{
+  --primary-color: #fdedec;
+  --secondary-color: #e74c3c;
+  --text-color: #000000de;
+  --box-shadow-color: 0000004d;
+  --card-color: #ffffff;
+}
+
+.dark-mode {
+  --primary-color: #282828;
+  --secondary-color: #c0392b;
+  --text-color: #ffffffde;
+  --box-shadow-color: #00000026;
+  --card-color: #212121;
+}
+
 
 /*******************************************************
 *************CSS STYLES FOR LOGIN & SIGNUP**************
@@ -26,7 +42,7 @@ body{
   z-index: -2;
 }
 .container-back-color{
-  background-color: #e74c3c;
+  background-color: var(--secondary-color);
   opacity: 0.7;
   width: 100%;
   height: 100%;
@@ -34,7 +50,7 @@ body{
   z-index: -1;
 }
 .container {
-  height: 100vh;
+  height: 100dvh;
   width: 100%;
   align-items: center;
   display: flex;
@@ -43,10 +59,10 @@ body{
 
 .card {
   border-radius: 10px;
-  box-shadow: 0 5px 10px 0 rgba(0, 0, 0, 0.3);
+  box-shadow: 0 5px 10px 0 var(--box-shadow-color);
   width: 400px;
   padding: 20px 0px;
-  background-color: #ffffff;
+  background-color: var(--card-color);
   padding: 10px 30px;
 }
 .column{
@@ -80,7 +96,7 @@ body{
 }
 
 .form button {
-  background-color: #e74c3c;
+  background-color: var(--secondary-color);
   color: #ffffff;
   font-size: 16px;
   outline: none;
@@ -88,7 +104,7 @@ body{
   border: none;
   padding: 8px 15px;
   width: 100%;
-  margin-top: 5px;
+  margin-top: 1px;
 }
 
 .card_terms {
@@ -124,7 +140,7 @@ body{
   left: 0;
   right: 0;
   bottom: 0;
-  background-color: rgba(231,76,60,0.7); /* Black background with opacity */
+  background-color: var(--secondary-color); /* Black background with opacity */
   z-index: 2; /* Specify a stack order in case you're using a different order for other elements */
   align-items: center;
   display: flex;
@@ -171,18 +187,33 @@ body{
 ********CSS FOR HOME PAGE*******************************
 ********************************************************/
 .home-page{
-  background-color: #fdedec;
+  background-color: var(--primary-color);
   display: flex;
   flex-direction: column;
-  min-height: 100vh;
+  min-height: 100dvh;
 }
 
 .main-content{
   display: flex;
-  width: 90%;
-  margin: 10px auto;
+  width: 100%;
+  margin: 5px 0px;
   padding: 10px 10px;
   flex:1;
+}
+
+@media (max-width: 768px) {
+  .main-content {
+    flex-direction: column; /* Stack items */
+    align-items: center;
+    justify-content: center;
+  }
+
+  .sidebar,
+  .chat-area {
+    width: 100%;
+    max-width: 100%;
+    flex: none;
+  }
 }
 
 
@@ -226,7 +257,7 @@ i{
   width: 40px;
   height: 40px;
   border-radius: 50%;
-  background-color: #e74c3c;
+  background-color: var(--secondary-color);
   color: white;
   font-size: 20px;
   font-weight: bold;
@@ -259,7 +290,7 @@ i{
   top: 40px;
   right: 0;
   width: 250px;
-  background-color: #fdedec;
+  background-color: var(--primary-color);;
   border-radius: 5px;
   box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
   z-index: 10;
@@ -357,7 +388,7 @@ i{
   position: absolute;
   right: 10px;
   font-size: 25px;
-  color: #e74c3c;
+  color: var(--secondary-color);
 }
 
 /*******************************************************
@@ -400,7 +431,7 @@ i{
   display: flex;
   justify-content: space-between;
   font-weight: bold;
-  background: #fdedec;
+  background: var(--primary-color);;
   border-radius: 5px;
 }
 
@@ -434,14 +465,6 @@ i{
   font-weight: bold;
 }
 
-.start-chat-btn {
-  padding: 5px 10px;
-  background: #007bff;
-  color: white;
-  border: none;
-  cursor: pointer;
-  border-radius: 3px;
-}
 
 
 /*******************************************************
@@ -453,7 +476,7 @@ i{
   padding: 10px 10px;
   color: white;
   cursor: pointer;
-  background-color: #e74c3c;
+  background-color: var(--secondary-color);
 }
 
 .selected-user-avatar{
@@ -461,7 +484,7 @@ i{
   height: 50px;
   border-radius: 50%;
   background-color: white;
-  color: #e74c3c;
+  color: var(--secondary-color);
   font-size: 22px;
   font-weight: bold;
   text-align: center;
@@ -490,7 +513,7 @@ i{
   width: 50px;
   height: 50px;
   border-radius: 50%;
-  background-color: #e74c3c;
+  background-color: var(--secondary-color);
   color: white;
   font-size: 22px;
   font-weight: bold;
@@ -505,7 +528,7 @@ i{
   padding: 10px 5px;
   border: none;
   border-radius: 3px;
-  background-color: #e74c3c;
+  background-color: var(--secondary-color);
   color: white;
 }
 
@@ -522,7 +545,7 @@ i{
   border-radius: 10px;
   display: flex;
   flex-direction: column;
-  height: 85vh;
+  height: 85dvh;
 }
 
 /*******************************************************
@@ -534,7 +557,7 @@ i{
     border-bottom: #bbb 1px solid;
     text-align: right;
     font-weight: bold;
-    color: #e74c3c;
+    color: var(--secondary-color);;
 }
 
 /*******************************************************
@@ -565,21 +588,21 @@ i{
   position: absolute;
   right: 10px;
   font-size: 25px;
-  color: #e74c3c;
+  color: var(--secondary-color);;
   cursor: pointer;
 }
 .send-emoji-btn{
   position: absolute;
   right: 50px;
   font-size: 25px;
-  color: #e74c3c;
+  color: var(--secondary-color);;
   cursor: pointer;
 }
 .send-image-btn{
   position: absolute;
   right: 80px;
   font-size: 25px;
-  color: #e74c3c;
+  color: var(--secondary-color);;
   cursor: pointer;
   
 }
@@ -600,7 +623,7 @@ i{
 }
 
 .send-message{ 
-  background-color: #e74c3c;
+  background-color: var(--secondary-color);;
   color: white;
   margin-left: 100px;
   border-top-right-radius: 0px;
@@ -631,13 +654,13 @@ i{
 
 /* Handle */
 .main-chat-area::-webkit-scrollbar-thumb {
-    background: #e74c3c; 
+    background: var(--secondary-color);; 
     border-radius: 10px;
 }
 
 /* Handle on hover */
 .main-chat-area::-webkit-scrollbar-thumb:hover {
-    background: #e74c3c; 
+    background: var(--secondary-color);; 
 }
 
 
@@ -670,7 +693,7 @@ i{
   width: 25px;
   height: 25px;
   border-radius: 50%;
-  background-color: #e74c3c;
+  background-color: var(--secondary-color);;
   font-weight: bold;
   color: white;
 }
@@ -696,7 +719,7 @@ i{
   padding: 30px;
   border-radius: 10px;
   box-shadow: rgba(0, 0, 0, 0.35) 0px 5px 15px;
-  background-color: #fdedec;
+  background-color: var(--primary-color);;
 }
 
 
@@ -806,7 +829,7 @@ input[type="file"]::file-selector-button:active {
 .logout-button{
   background-color: transparent;
   border: none;
-  color: #e74c3c;
+  color: var(--secondary-color);;
   cursor: pointer;
 }
 .upload-btn {

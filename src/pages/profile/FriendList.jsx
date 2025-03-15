@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import ProfileSidebar from './ProfileSidebar';
 import ProfileHeader from './ProfileHeader';
 import './profile.css';
-import { acceptFriendRequest, getAllFriendRequests } from '../../apiCalls/friendRequest';
+import { acceptFriendRequest, getAllFriendRequests, rejectUserFriendRequest } from '../../apiCalls/friendRequest';
 import { getFriendsList } from '../../apiCalls/user';
 import toast from 'react-hot-toast';
 
@@ -40,7 +40,7 @@ const FriendList = () => {
                 setFriends(response?.data?.data);
             }
             else {
-                toast.error(response.error.message)
+                toast.error(response?.error?.message ?? 'Error fetching friends')
             }
         }
         catch (error) {
@@ -58,7 +58,7 @@ const FriendList = () => {
             }
         }
         catch (error) {
-            toast.error(error.response?.data?.message);
+            toast.error(error.response?.data?.message ?? 'Error accepting friends request');
         }
     }
 
@@ -69,12 +69,21 @@ const FriendList = () => {
     }, [])
 
 
-    const rejectFriendRequest = (id) => {
-        setFriendRequests(friendRequests.filter(friend => friend.id !== id));
+    const rejectFriendRequest = async (requestId) => {
+        try {
+            const response = await rejectUserFriendRequest(requestId);
+            if (response.status === 200) {
+                toast.success(response.data?.message);
+                getFriendRequests();
+                getFriendsListOfUser();
+            }
+        }catch (error) {
+            toast.error(error?.message ?? 'Error accepting friend request');
+        }
     };
 
     return (
-        <Box sx={{ display: "flex", flexDirection: "column", height: "100vh" }}>
+        <Box sx={{ display: "flex", flexDirection: "column", height: "100dvh" }}>
             <ProfileHeader />
             <Box sx={{ display: "flex", flex: 1 }}>
                 <ProfileSidebar />
@@ -152,7 +161,7 @@ const FriendList = () => {
                                                 src={friend?.profilePic}
                                                 sx={{ width: 40, height: 40, mr: 2 }}
                                             >
-                                                {!friend?.profilePic && friend?.firstName[0]}
+                                                {!friend?.profilePic && friend?.firstName?.charAt(0)}
                                             </Avatar>
                                         </Badge>
                                         <Typography variant="body1">{friend?.firstName}</Typography>

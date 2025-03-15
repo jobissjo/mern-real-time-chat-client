@@ -1,45 +1,49 @@
-import React from 'react';
-import { useNavigate } from 'react-router-dom';
+import React, { useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { Drawer, List, ListItemButton, ListItemIcon, ListItemText, IconButton } from "@mui/material";
+import { Person, Group, Notifications, Settings, Security, ExitToApp, Menu } from "@mui/icons-material";
 
 const ProfileSidebar = () => {
-    const navigate = useNavigate();
+  const navigate = useNavigate();
+  const [open, setOpen] = useState(false);
 
-    const logout = async ()=> {
-        localStorage.removeItem('token');
-        navigate('/login');
-        socket.emit('user-logout', user._id);
-        dispatch(logoutUser());
-    }
+  const logout = () => {
+    localStorage.removeItem("token");
+    navigate("/login");
+    // Uncomment if using socket & dispatch
+    // socket.emit("user-logout", user._id);
+    // dispatch(logoutUser());
+  };
 
-    return (
-        <div className="profile-sidebar">
-            <div className="profile-card" onClick={() => navigate('/profile')}>
-                <i className="fa fa-user" aria-hidden="true"></i>
-                <span>Profile</span>
-            </div>
-            <div className="profile-card" onClick={() => navigate('/friends')}>
-                <i className="fa fa-users"></i>
-                <span>Friends</span>
-            </div>
-            <div className="profile-card" onClick={() => navigate('/notifications')}>
-                <i className="fa fa-bell"></i>
-                <span>Notifications</span>
-            </div>
-            <div className="profile-card" onClick={() => navigate('/preferences')}>
-                <i className="fa fa-cog"></i>
-                <span>Preferences</span>
-            </div>
-            <div className='profile-card' onClick={() => navigate('/security')}>
-                <i className='fa fa-shield'></i>
-                <span>Security</span>
-            </div>
-            <div className='profile-card' onClick={() => logout()}>
-                <i className='fa fa-power-off'></i>
-                <span>Logout</span>
+  const menuItems = [
+    { text: "Profile", icon: <Person />, path: "/profile" },
+    { text: "Friends", icon: <Group />, path: "/friends" },
+    { text: "Notifications", icon: <Notifications />, path: "/notifications" },
+    { text: "Preferences", icon: <Settings />, path: "/preferences" },
+    { text: "Security", icon: <Security />, path: "/security" },
+    { text: "Logout", icon: <ExitToApp />, action: logout }
+  ];
 
-            </div>
-        </div>
-    );
+  return (
+    <>
+      {/* Menu Icon for Mobile */}
+      <IconButton onClick={() => setOpen(true)} sx={{ position: "fixed", top: 10, left: 10 }}>
+        <Menu />
+      </IconButton>
+
+      {/* Sidebar Drawer */}
+      <Drawer anchor="left" open={open} onClose={() => setOpen(false)}>
+        <List sx={{ width: 250 }}>
+          {menuItems.map(({ text, icon, path, action }) => (
+            <ListItemButton key={text} onClick={() => { action ? action() : navigate(path); setOpen(false); }}>
+              <ListItemIcon>{icon}</ListItemIcon>
+              <ListItemText primary={text} />
+            </ListItemButton>
+          ))}
+        </List>
+      </Drawer>
+    </>
+  );
 };
 
 export default ProfileSidebar;

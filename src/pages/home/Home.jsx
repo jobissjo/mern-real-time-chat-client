@@ -4,12 +4,14 @@ import Sidebar from './components/Sidebar'
 import ChatArea from './components/ChatArea'
 import { useSelector } from 'react-redux';
 import { io } from 'socket.io-client';
+import { useMediaQuery } from '@mui/material';
 
-const socket = io('http://localhost:5000');
+const socket = io('ws://192.168.1.40:5000/');
 
 const Home = () => {
   const { user, selectedChat } = useSelector((state) => state.userReducer);
   const [onlineUsers, setOnlineUsers] = useState([]);
+  const isMobile = useMediaQuery("(max-width: 768px)");
   
 
   useEffect(()=> {
@@ -19,6 +21,13 @@ const Home = () => {
       socket.on('online-users', usersData=>{
         setOnlineUsers(usersData);
       })
+
+      return ()=> {
+        socket.emit('user-logout', user._id);
+        socket.off('online-users');
+        socket.off('user-login');
+        socket.disconnect()
+      }
     }
   }, [user])
 
@@ -26,9 +35,20 @@ const Home = () => {
     <div className="home-page">
       <Header socket={socket} />
       <div className="main-content">
-          <Sidebar socket={socket} onlineUsers={onlineUsers} />
+          {
+            isMobile ? (
+              selectedChat ? (
+                <ChatArea socket={socket} />
+              ) : (
+                <Sidebar socket={socket} onlineUsers={onlineUsers} />
+              )
+            ):(
+              <>
+              <Sidebar socket={socket} onlineUsers={onlineUsers} />
           
-          {selectedChat && <ChatArea socket={socket} />}
+              {selectedChat && <ChatArea socket={socket} />}
+              </>
+            )}
       </div>
   </div>
   )

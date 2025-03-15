@@ -1,134 +1,146 @@
 import React, { useState, useEffect } from 'react';
 import ProfileSidebar from './ProfileSidebar';
 import ProfileHeader from './ProfileHeader';
-import './profile.css';
-import 'bootstrap/dist/css/bootstrap.min.css'; // Import Bootstrap for Skeleton styles
 import { clearAllNotificationOfUser, getAllNotification, deleteAllNotificationsOfUser, readNotification } from '../../apiCalls/notification';
-import toast from 'react-hot-toast/headless';
+import toast from 'react-hot-toast';
+import {
+    Box, Typography, Button, List, ListItem, Paper, Skeleton
+} from "@mui/material";
 
 const NotificationList = () => {
     const [notifications, setNotifications] = useState([]);
-    const [loading, setLoading] = useState(true); // Track loading state
+    const [loading, setLoading] = useState(true);
 
     useEffect(() => {
-
-        
         fetchNotifications();
-        
     }, []);
 
     const fetchNotifications = async () => {
         try {
-            // Simulating an API request (replace with real API call)
             const response = await getAllNotification();
-            if (response.status === 200){
-                console.log(response.data?.data, "notification");
+            if (response.status === 200) {
                 setNotifications(response.data?.data);
-            }
-            else{
-                toast.error(response.error.message)
+            } else {
+                toast.error(response.error.message);
             }
         } catch (error) {
             console.error('Error fetching notifications:', error);
         } finally {
-            setLoading(false); // Stop loading when data is fetched
+            setLoading(false);
         }
     };
 
     const markAsRead = async (id) => {
-        try{
-            let response = await readNotification(id);
-            if(response.status === 200){
-                toast.success(response.data?.message?? 'Notification marked as read');
+        try {
+            const response = await readNotification(id);
+            if (response.status === 200) {
+                toast.success(response.data?.message ?? 'Notification marked as read');
                 fetchNotifications();
             }
-        }
-        catch(error){
+        } catch (error) {
             console.error('Error marking notification as read:', error);
         }
     };
 
     const markAllAsRead = async () => {
-        try{
-            let response = await clearAllNotificationOfUser();
-            if(response.status === 200){
+        try {
+            const response = await clearAllNotificationOfUser();
+            if (response.status === 200) {
                 toast.success(response.data?.message ?? 'All notifications marked as read');
                 fetchNotifications();
+            } else {
+                toast.error(response.error.message);
             }
-            else{
-                toast.error(response.error.message)
-            }
-        }
-        catch(error){
+        } catch (error) {
             console.error('Error marking all notifications as read:', error);
         }
     };
 
-    const deleteAllNotificationOfUser = async () => { 
-        try{
+    const deleteAllNotifications = async () => {
+        try {
             const response = await deleteAllNotificationsOfUser();
-            if(response.status === 200){
+            if (response.status === 200) {
                 toast.success(response.data?.message ?? 'All notifications cleared');
-                fetchNotifications()
+                fetchNotifications();
+            } else {
+                toast.error(response.error.message);
             }
-            else{
-                toast.error(response.error.message)
-            }
-        }
-        catch(error){
+        } catch (error) {
             console.error('Error deleting all notifications:', error);
         }
-    }
-
-    
+    };
 
     return (
-        <div className="notifications-container">
+        <Box sx={{ display: "flex", flexDirection: "column", height: "100dvh" }}>
             <ProfileHeader />
-            <div className="notifications-layout">
+            <Box sx={{ display: "flex", flex: 1 }}>
                 <ProfileSidebar />
-                <div className="notifications-content">
-                    <div className="notification-header">
-                        <h2>Notifications</h2>
-                        <div>
-                            <button className="clear-all-btn-pr-msg" onClick={deleteAllNotificationOfUser} disabled={loading}>
+                <Box sx={{ flex: 1, p: 3 }}>
+                    <Box sx={{
+                        display: "flex",
+                        justifyContent: "space-between",
+                        alignItems: "center",
+                        mb: 3
+                    }}>
+                        <Typography variant="h5">Notifications</Typography>
+                        <Box>
+                            <Button
+                                variant="contained"
+                                color="error"
+                                sx={{ mr: 2 }}
+                                onClick={deleteAllNotifications}
+                                disabled={loading}
+                            >
                                 Clear All
-                            </button>
-                            <button className="mark-all-btn" onClick={markAllAsRead} disabled={loading}>
+                            </Button>
+                            <Button
+                                variant="contained"
+                                color="primary"
+                                onClick={markAllAsRead}
+                                disabled={loading}
+                            >
                                 Mark All as Read
-                            </button>
-                        </div>
-                    </div>
+                            </Button>
+                        </Box>
+                    </Box>
 
-                    {/* Show Skeleton Loader when loading */}
+                    {/* Skeleton Loader when loading */}
                     {loading ? (
-                        <ul className="profile-notification-list">
+                        <List>
                             {[1, 2, 3, 4].map((index) => (
-                                <li key={index} className="notification-item">
-                                    <div className="placeholder-glow">
-                                        <span className="placeholder col-8"></span>
-                                        <span className="placeholder col-4"></span>
-                                    </div>
-                                </li>
+                                <Paper key={index} sx={{ p: 2, mb: 2 }}>
+                                    <Skeleton variant="text" width="60%" height={20} />
+                                    <Skeleton variant="text" width="40%" height={20} />
+                                </Paper>
                             ))}
-                        </ul>
+                        </List>
                     ) : (
-                        <ul className="profile-notification-list">
+                        <List>
                             {notifications.map(notification => (
-                                <li key={notification._id} className={`notification-item ${notification.read ? 'read' : 'unread'}`}>
-                                    <span className="notification-text">{notification.message}</span>
+                                <Paper key={notification._id} sx={{
+                                    p: 2, mb: 2,
+                                    backgroundColor: notification.read ? "white" : "#f0f4ff",
+                                    display: "flex",
+                                    justifyContent: "space-between",
+                                    alignItems: "center"
+                                }}>
+                                    <Typography variant="body1">{notification.message}</Typography>
                                     {!notification.read && (
-                                        <button className="mark-read-btn" onClick={() => markAsRead(notification._id)}>
+                                        <Button
+                                            variant="contained"
+                                            color="success"
+                                            onClick={() => markAsRead(notification._id)}
+                                        >
                                             Mark as Read
-                                        </button>
+                                        </Button>
                                     )}
-                                </li>
+                                </Paper>
                             ))}
-                        </ul>
+                        </List>
                     )}
-                </div>
-            </div>
-        </div>
+                </Box>
+            </Box>
+        </Box>
     );
 };
 

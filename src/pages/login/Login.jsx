@@ -49,6 +49,8 @@ const Login = () => {
         }, [1000])
       }
       else {
+        console.log(response);
+        
         toast.error(response.message)
       }
     }, 1000)

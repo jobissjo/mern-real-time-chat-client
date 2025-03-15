@@ -1,19 +1,17 @@
 import React, { useState } from 'react';
 import ProfileSidebar from './ProfileSidebar';
 import ProfileHeader from './ProfileHeader';
-import './profile.css'; // ✅ Shared styles
+import { TextField, Button, Tabs, Tab, Box, Typography, Switch, Dialog, DialogTitle, DialogContent, DialogActions } from '@mui/material';
 import { changeCurrentPassword } from '../../apiCalls/auth';
 import toast from 'react-hot-toast';
 import PopupDialog from '../../components/PopupDialog';
-
 const ProfileSecurity = () => {
     const [currentPassword, setCurrentPassword] = useState('');
     const [newPassword, setNewPassword] = useState('');
     const [confirmPassword, setConfirmPassword] = useState('');
     const [twoFactorEnabled, setTwoFactorEnabled] = useState(false);
-    const [activeTab, setActiveTab] = useState('password');
-    const [showDialog , setShowDialog] = useState(false); // Tracks active tab
-
+    const [activeTab, setActiveTab] = useState(0);
+    const [showDialog, setShowDialog] = useState(false);
     const [errors, setErrors] = useState({});
 
     const handlePasswordUpdate = async () => {
@@ -26,9 +24,7 @@ const ProfileSecurity = () => {
         if (newPassword !== confirmPassword) validationErrors.confirmPassword = "Passwords do not match";
 
         setErrors(validationErrors);
-        if (Object.keys(validationErrors).length > 0) {
-            return;
-        }
+        if (Object.keys(validationErrors).length > 0) return;
 
         try {
             const response = await changeCurrentPassword({ newPassword, oldPassword: currentPassword });
@@ -42,120 +38,79 @@ const ProfileSecurity = () => {
         }
     };
 
-    const cancelShowDialog = async ()=> {
-        setShowDialog(false);
-    }
-    
-    const handleTwoFactorToggle = async () => {
+    const handleTwoFactorToggle = () => {
         setTwoFactorEnabled(!twoFactorEnabled);
         setShowDialog(false);
-    }
-
-    const getPopupDialogContent = ()=> {
-        return {
-            title: !twoFactorEnabled ? "Enable Two Factor Verification" : "Disable Two Factor Verification",
-            message: !twoFactorEnabled ? "Do you want to enable two factor verification": "Do you want to disable two factor verification",
-            onConfirm:handleTwoFactorToggle,
-            onCancel: cancelShowDialog,
-            buttonText: "Yes",
-            type : twoFactorEnabled ? "danger" : "info"
-        }
-
-    }
-    
+    };
 
     return (
-        <div className="security-container">
+        <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
             <ProfileHeader />
-            <div className="security-layout">
+            <Box sx={{ display: 'flex', gap: 2 }}>
                 <ProfileSidebar />
-                <div className="security-content">
-                    <h2>Profile Security</h2>
-
-                    {/* Bootstrap Tabs */}
-                    <ul className="nav nav-tabs">
-                        <li className="nav-item">
-                            <button 
-                                className={`nav-link ${activeTab === 'password' ? 'active' : ''}`} 
-                                onClick={() => setActiveTab('password')}
-                            >
-                                Change Password
-                            </button>
-                        </li>
-                        <li className="nav-item">
-                            <button 
-                                className={`nav-link ${activeTab === '2fa' ? 'active' : ''}`} 
-                                onClick={() => setActiveTab('2fa')}
-                            >
-                                Two-Step Verification
-                            </button>
-                        </li>
-                    </ul>
-
-                    <div className="tab-content mt-3">
-                        {activeTab === 'password' && (
-                            <div className="security-section">
-                                <h3>Password Management</h3>
-                                <div className='mb-3'>
-                                    <input 
-                                        type="password" 
-                                        placeholder="Current Password" 
-                                        className={`form-control ${errors.currentPassword ? 'is-invalid' : ''}`} 
-                                        value={currentPassword} 
-                                        onChange={(e) => setCurrentPassword(e.target.value)}
-                                    />
-                                    {errors.currentPassword && <div className="invalid-feedback">{errors.currentPassword}</div>}
-                                </div>
-                                <div className='mb-3'>
-                                    <input 
-                                        type="password" 
-                                        className={`form-control ${errors.newPassword ? 'is-invalid' : ''}`} 
-                                        placeholder="New Password" 
-                                        value={newPassword} 
-                                        onChange={(e) => setNewPassword(e.target.value)}
-                                    />
-                                    {errors.newPassword && <div className="invalid-feedback">{errors.newPassword}</div>}
-                                </div>
-                                <div className='mb-3'>
-                                    <input 
-                                        type="password" 
-                                        className={`form-control ${errors.confirmPassword ? 'is-invalid' : ''}`} 
-                                        placeholder="Confirm New Password" 
-                                        value={confirmPassword} 
-                                        onChange={(e) => setConfirmPassword(e.target.value)}
-                                    />
-                                    {errors.confirmPassword && <div className="invalid-feedback">{errors.confirmPassword}</div>}
-                                </div>
-                                <button className="update-btn" onClick={handlePasswordUpdate}>
-                                    Update Password
-                                </button>
-                            </div>
-                        )}
-
-                        {activeTab === '2fa' && (
-                            <>
-                                <div className="security-section">
-                                    <h3>Two-Factor Authentication</h3>
-                                    <button 
-                                        className={`toggle-btn ${twoFactorEnabled ? 'enabled' : 'disabled'}`} 
-                                        onClick={() => {
-                                            
-                                            setShowDialog(true) 
-                                        }}
-                                    >
-                                        {twoFactorEnabled ? 'Disable 2FA' : 'Enable 2FA'}
-                                    </button>
-                                </div>
-
-                                { showDialog && <PopupDialog {...getPopupDialogContent()} />}
-                            </>
-
-                            
-                        )}
-                    </div>
-                </div>
-            </div>
-        </div>
+                <Box sx={{ flexGrow: 1, p: 3, backgroundColor: 'background.paper', borderRadius: 2, boxShadow: 1 }}>
+                    <Typography variant="h5">Profile Security</Typography>
+                    <Tabs value={activeTab} onChange={(_, newValue) => setActiveTab(newValue)}>
+                        <Tab label="Change Password" />
+                        <Tab label="Two-Factor Authentication" />
+                    </Tabs>
+                    {activeTab === 0 && (
+                        <Box sx={{ mt: 3, display: 'flex', flexDirection: 'column', gap: 2 }}>
+                            <Typography variant="h6">Password Management</Typography>
+                            <TextField
+                                type="password"
+                                label="Current Password"
+                                fullWidth
+                                error={!!errors.currentPassword}
+                                helperText={errors.currentPassword}
+                                value={currentPassword}
+                                onChange={(e) => setCurrentPassword(e.target.value)}
+                            />
+                            <TextField
+                                type="password"
+                                label="New Password"
+                                fullWidth
+                                error={!!errors.newPassword}
+                                helperText={errors.newPassword}
+                                value={newPassword}
+                                onChange={(e) => setNewPassword(e.target.value)}
+                            />
+                            <TextField
+                                type="password"
+                                label="Confirm New Password"
+                                fullWidth
+                                error={!!errors.confirmPassword}
+                                helperText={errors.confirmPassword}
+                                value={confirmPassword}
+                                onChange={(e) => setConfirmPassword(e.target.value)}
+                            />
+                            <Button variant="contained" style={{backgroundColor: '#ff5b5b'}} onClick={handlePasswordUpdate}>Update Password</Button>
+                        </Box>
+                    )}
+                    {activeTab === 1 && (
+                        <Box sx={{ mt: 3, display: 'flex', flexDirection: 'column', gap: 2 }}>
+                            <Typography variant="h6">Two-Factor Authentication</Typography>
+                            <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
+                                <Typography>{twoFactorEnabled ? 'Disable 2FA' : 'Enable 2FA'}</Typography>
+                                <Switch checked={twoFactorEnabled} onChange={() => setShowDialog(true)} />
+                            </Box>
+                        </Box>
+                    )}
+                </Box>
+            </Box>
+            <PopupDialog
+                open={showDialog}
+                title="Enable Two-Factor Authentication"
+                message="Do you want to enable two-factor authentication?"
+                type="info"
+                onCancel={() => setShowDialog(false)}
+                onConfirm={() => {
+                    handleTwoFactorToggle()
+                }}
+                buttonText="Yes"
+                cancelText="No"
+            />;
+        </Box>
     );
 };
 

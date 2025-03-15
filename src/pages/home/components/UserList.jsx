@@ -2,188 +2,192 @@ import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import toast from 'react-hot-toast';
 import { createNewChat } from '../../../apiCalls/chat';
-import { showLoader, hideLoader } from '../../../redux/loaderSlice';
 import { setAllChats, setSelectedChat } from '../../../redux/userSlice';
-import moment from 'moment';
-import store from '../../../redux/store';
-import { sendFriendRequest } from '../../../apiCalls/friendRequest';
 import { getNotChattedFriendsList } from '../../../apiCalls/user';
-
 import PropTypes from 'prop-types';
+import {
+  Accordion,
+  AccordionSummary,
+  AccordionDetails,
+  Avatar,
+  Badge,
+  Box,
+  Button,
+  Typography,
+  List,
+  ListItem,
+  ListItemAvatar,
+  ListItemText,
+  Divider,
+} from '@mui/material';
+import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 
-const UserList = ({ searchKey, socket, onlineUsers }) => {
-    const { allUsers, allChats, user: currentUser, selectedChat } = useSelector(state => state.userReducer);
-    const [showFriends, setShowFriends] = useState(false); // Minimize/expand friends list
-    const [showChats, setShowChats] = useState(true); // Minimize/expand chat list
-    const dispatch = useDispatch();
-    const [friendsNotChattedYet, setFriendsNotChattedYet] = useState([]);
+const UserList = ({ searchKey, onlineUsers, socket }) => {
+  const { allChats, user: currentUser, selectedChat } = useSelector((state) => state.userReducer);
+  const dispatch = useDispatch();
+  const [friendsNotChattedYet, setFriendsNotChattedYet] = useState([]);
 
-    const startNewChat = async (member_id) => {
-        try {
-            const members = [currentUser._id, member_id];
-            const [response, status_code] = await createNewChat(members);
+  useEffect(() => {
+    fetchNotChattedFriends();
+  }, []);
 
-            if (status_code === 200) {
-                toast.success("Chat started successfully");
-            } else {
-                toast.error(response.message);
-                const newChat = response.data;
-                const updatedChat = [...allChats, newChat];
-                dispatch(setAllChats(updatedChat));
-                dispatch(setSelectedChat(newChat));
+  const fetchNotChattedFriends = async () => {
+    try {
+      const response = await getNotChattedFriendsList();
+      if (response.status === 200) {
+        setFriendsNotChattedYet(response.data.data);
+      }
+    } catch (err) {
+      toast.error(err.message);
+    }
+  };
+
+  const startNewChat = async (member_id) => {
+    try {
+      const members = [currentUser._id, member_id];
+      const [response, status_code] = await createNewChat(members);
+      if (status_code === 200) {
+        toast.success('Chat started successfully');
+      } else {
+        toast.error(response.message);
+        const newChat = response.data;
+        dispatch(setAllChats([...allChats, newChat]));
+        dispatch(setSelectedChat(newChat));
+      }
+    } catch (err) {
+      toast.error(err.message);
+    }
+  };
+
+  const openChat = (selectedUserId) => {
+    const chat = allChats.find((chat) => chat.members.some((mem) => mem._id === selectedUserId));
+    if (chat) {
+      dispatch(setSelectedChat(chat));
+    }
+  };
+
+  useEffect(() => {
+
+    const handleMsgCountUpdated = (message) => {
+      console.log('message:', message, "allChats", allChats);
+      
+      let tempAllChats = allChats.map((chat) => chat);
+
+      if (message.ChatId != selectedChat?._id) {
+        const updatedChats = tempAllChats?.map((chat) => {
+          if (chat._id === message.chatId) {
+            return {
+              ...chat,
+              unreadMessageCount: chat?.unreadMessageCount ? chat.unreadMessageCount + 1 : 1,
+              lastMessage: message
             }
-        } catch (err) {
-            toast.error(err.message);
-        }
-    };
+          }
+          return chat;
+        });
+        tempAllChats = updatedChats;
 
-    const getLastMessage = (userId) => {
-        const chat = allChats?.find(chat => chat?.members?.map(u => u._id).includes(userId));
-        if (!chat) return '';
-        if (!chat?.lastMessage) return '';
-        return chat?.lastMessage?.sender === currentUser._id
-            ? `You: ${chat?.lastMessage?.text?.substring(0, 25)}`
-            : chat?.lastMessage?.text?.substring(0, 25);
-    };
+        let latestChat = tempAllChats.find(chat => chat._id === message.chatId);
+        let otherChats = tempAllChats.filter(chat => chat._id !== message.chatId);
 
-    const openChat = (selected_user_id) => {
-        const chat = allChats.find(chat => chat.members.map(u => u._id).includes(currentUser._id) && chat.members.map(u => u._id).includes(selected_user_id));
-        if (chat) {
-            dispatch(setSelectedChat(chat));
-        }
-    };
-
-    const getUnreadMessageCount = (userId) => {
-        const chat = allChats?.find(chat => chat?.members?.map(m => m._id).includes(userId));
-        if (chat?.unreadMessageCount && chat?.lastMessage?.sender !== currentUser._id) {
-            return <div className='unread-message-count'>{chat.unreadMessageCount}</div>;
-        }
-        return "";
-    };
-
-    const getChatListData = () => {
-        if (searchKey === "") {
-            return allChats;
-        } else {
-            const filteredChats = allChats.filter(chat => {
-                const member = chat.members.filter(member => member._id != currentUser._id)[0];             
-                
-                return  member?.firstName?.toLowerCase().includes(searchKey.toLowerCase()) || member.lastName?.toLowerCase().includes(searchKey.toLowerCase());
-            })
-            return filteredChats;
-            
-            // return allUsers.filter(user => user.firstName.toLowerCase().includes(searchKey.toLowerCase()) || user.lastName.toLowerCase().includes(searchKey.toLowerCase()));
-        }
-    };
-
-    useEffect(() => {
-        getNotChattedFriendList()
-    }, [])
-
-
-
-    const getNotChattedFriendList = async () => {
-        try {
-            const response = await getNotChattedFriendsList();
-            if (response.status === 200) {
-                setFriendsNotChattedYet(response.data.data);
-            }
-        }
-        catch (err) {
-            toast.error(err.message)
-        }
+        tempAllChats = [latestChat, ...otherChats];
+      }
+      console.log("tempAllChats", tempAllChats);
+      
+      dispatch(setAllChats(tempAllChats));
     }
 
-    return (
-        <>
-            <div className="user-list-container">
-                {/* Chat List Header (Collapsible) */}
-                <div className="chat-list-header" onClick={() => setShowChats(!showChats)}>
-                    <span>Chats</span>
-                    <i className={`fa ${showChats ? 'fa-chevron-down' : 'fa-chevron-up'}`} />
-                </div>
+    socket.on('message-count-updated', handleMsgCountUpdated)
 
-                {/* Chat List (Collapsible) */}
-                {showChats && (
-                    <div className="chat-list">
-                        {getChatListData()?.map(obj => {
-                            let user = obj;
-                            if (obj.members) {
-                                user = obj.members.find(mem => mem._id !== currentUser._id);
-                            }
-                            return (
-                                <div className="user-search-filter" onClick={() => openChat(user._id)} key={user._id}>
-                                    <div className="filtered-user">
-                                        <div className="filter-user-display">
-                                            {user.profilePic
-                                                ? <img src={user.profilePic} alt="Profile Pic" className="user-profile-image"
-                                                    style={onlineUsers.includes(user._id) ? { border: '3px solid #82e0aa' } : {}} />
-                                                : <div className="user-default-avatar"
-                                                    style={onlineUsers.includes(user._id) ? { border: '3px solid #82e0aa' } : {}}>
-                                                    {user.firstName.charAt(0).toUpperCase()}{user.lastName.charAt(0).toUpperCase()}
-                                                </div>
-                                            }
+    return () => {
+      socket.off('message-count-updated', handleMsgCountUpdated)
+    }
+  }, [allChats, selectedChat])
 
-                                            <div className="filter-user-details">
-                                                <div className="user-display-name">{user.firstName} {user.lastName}</div>
-                                                <div className="user-display-email">{getLastMessage(user._id) || user.email}</div>
-                                            </div>
-                                            <div>
-                                                {getUnreadMessageCount(user._id)}
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            );
-                        })}
-                    </div>
-                )}
+  const getChatListData = () => {
+    if (!searchKey) return allChats;
+    return allChats.filter((chat) => {
+      const member = chat.members.find((mem) => mem._id !== currentUser._id);
+      return (
+        member?.firstName?.toLowerCase().includes(searchKey.toLowerCase()) ||
+        member?.lastName?.toLowerCase().includes(searchKey.toLowerCase())
+      );
+    });
+  };
 
-                {/* Friend List Header (Collapsible) */}
-                <div className="friend-list-container">
-                    <div className="friend-list-header" onClick={() => setShowFriends(!showFriends)}>
-                        <span>Friends (Not Chatted Yet)</span>
-                        <i className={`fa ${showFriends ? 'fa-chevron-down' : 'fa-chevron-up'}`} />
-                    </div>
+  return (
+    <Box sx={{ backgroundColor: 'var(--primary-color)', borderRadius: '8px', p: 2, }}>
+      {/* Chat List */}
+      <Accordion defaultExpanded>
+        <AccordionSummary expandIcon={<ExpandMoreIcon />} style={{ backgroundColor: 'var(--primary-color)' }}>
+          <Typography variant="h6">Chats</Typography>
+        </AccordionSummary>
+        <AccordionDetails style={{ backgroundColor: 'var(--primary-color)', color: "var(--text-color)" }} >
+          <List sx={{ backgroundColor: 'var(--primary-color)', borderRadius: '8px',  color: "var(--text-color)" }}>
+            {getChatListData()?.map((chat, index) => {
+              const user = chat.members.find((mem) => mem._id !== currentUser._id);
+              let messageOrMail;
+              if (chat?.lastMessage) {
+                messageOrMail =
+                  chat?.lastMessage?.sender === currentUser._id
+                    ? `You: ${chat?.lastMessage?.text}`
+                    : chat?.lastMessage?.text;
+              } else {
+                messageOrMail = currentUser.email;
+              }
+              return (
+                <React.Fragment key={user._id}>
+                  <ListItem onClick={() => openChat(user._id)} sx={{ cursor: 'pointer' }}>
+                    <ListItemAvatar>
+                      <Badge color="success" variant={onlineUsers.includes(user._id) ? 'dot' : 'standard'}>
+                        <Avatar src={user.profilePic}>{user.firstName[0]}</Avatar>
+                      </Badge>
+                    </ListItemAvatar>
+                    <ListItemText
+                      style={{color: 'var(--text-color)'}}
+                      primary={`${user.firstName} ${user.lastName}`}
+                      secondary={messageOrMail}
+                    />
+                  </ListItem>
+                  {index < getChatListData().length - 1 && <Divider />} {/* Add divider between chat items */}
+                </React.Fragment>
+              );
+            })}
+          </List>
+        </AccordionDetails>
+      </Accordion>
 
-                    {/* Friend List (Collapsible) */}
-                    {showFriends && (
-                        <div className="friend-list">
-                            {friendsNotChattedYet.map(friend => (
-                                <div className="friend-item" key={friend._id}>
-                                    <div className="friend-details">
-                                        {friend.profilePic
-                                            ? <img src={friend.profilePic} alt="Profile Pic" className="friend-profile-image" />
-                                            : <div className="friend-avatar">
-                                                {friend.firstName.charAt(0).toUpperCase()}{friend.lastName.charAt(0).toUpperCase()}
-                                            </div>
-                                        }
-                                        <div className="friend-info">
-                                            <div className="friend-name">{friend.firstName} {friend.lastName}</div>
-                                        </div>
-                                    </div>
-                                    <button className="start-chat-btn" onClick={() => startNewChat(friend._id)}>Start Chat</button>
-                                </div>
-                            ))}
-                        </div>
-                    )}
-                </div>
-            </div>
-            {
-                searchKey && 
-                <div className='search-global-users'>
-                    <div>iiiiiiiiiiiiii</div>
-
-                </div>
-            }
-        </>
-    );
-}
+      {/* Friends List */}
+      <Accordion>
+        <AccordionSummary expandIcon={<ExpandMoreIcon />} style={{ backgroundColor: 'var(--primary-color)' }}>
+          <Typography variant="h6">Friends</Typography>
+        </AccordionSummary>
+        <AccordionDetails style={{ backgroundColor: 'var(--primary-color)' }}>
+          <List sx={{ backgroundColor: 'var(--primary-color)', borderRadius: '8px' }}>
+            {friendsNotChattedYet.map((friend, index) => (
+              <React.Fragment key={friend._id}>
+                <ListItem>
+                  <ListItemAvatar>
+                    <Avatar src={friend.profilePic}>{friend.firstName[0]}</Avatar>
+                  </ListItemAvatar>
+                  <ListItemText primary={`${friend.firstName} ${friend.lastName}`} />
+                  <Button variant="contained" color="primary" onClick={() => startNewChat(friend._id)}>
+                    Start Chat
+                  </Button>
+                </ListItem>
+                {index < friendsNotChattedYet.length - 1 && <Divider />} {/* Add divider between friend items */}
+              </React.Fragment>
+            ))}
+          </List>
+        </AccordionDetails>
+      </Accordion>
+    </Box>
+  );
+};
 
 UserList.propTypes = {
-    searchKey: PropTypes.string.isRequired,
-    socket: PropTypes.object,
-    onlineUsers: PropTypes.array
+  searchKey: PropTypes.string.isRequired,
+  onlineUsers: PropTypes.array.isRequired,
+  socket: PropTypes.object.isRequired,
 };
 
 export default UserList;

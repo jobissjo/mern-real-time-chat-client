@@ -1,92 +1,103 @@
-import moment from 'moment';
-import React, { useEffect, useState } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
-import { updateProfilePicture } from '../../apiCalls/user';
-import { hideLoader, showLoader } from '../../redux/loaderSlice';
-import toast from 'react-hot-toast';
-import ProfileSidebar from './ProfileSidebar';
-import ProfileHeader from './ProfileHeader';
-import './profile.css'
-import {Box, Button, List, ListItem, Avatar,} from '@mui/material'
-
+import moment from "moment";
+import React, { useEffect, useState } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import { updateProfilePicture } from "../../apiCalls/user";
+import { hideLoader, showLoader } from "../../redux/loaderSlice";
+import toast from "react-hot-toast";
+import ProfileSidebar from "./ProfileSidebar";
+import ProfileHeader from "./ProfileHeader";
+import { Box, Button, Avatar, Typography, IconButton } from "@mui/material";
+import { PhotoCamera } from "@mui/icons-material";
 
 const Profile = () => {
-    const { user } = useSelector(state => state.userReducer);
-    const [image, setImage] = useState('');
-    const dispatch = useDispatch();
+  const { user } = useSelector((state) => state.userReducer);
+  const [image, setImage] = useState("");
+  const dispatch = useDispatch();
 
-    function getInitials() {
-        return user.firstName?.toUpperCase().charAt(0) + user.lastName?.toUpperCase().charAt(0);
+  useEffect(() => {
+    if (user?.profilePic) {
+      setImage(user.profilePic);
     }
+  }, [user]);
 
-    const handleImageUpload = (e) => {
-        if (e.target.files[0]) {
-            const file = e.target.files[0];
-            const reader = new FileReader(file);
-            reader.readAsDataURL(file);
+  const handleImageUpload = (e) => {
+    if (e.target.files[0]) {
+      const file = e.target.files[0];
+      const reader = new FileReader();
+      reader.readAsDataURL(file);
 
-            reader.onloadend = async () => {
-                setImage(reader.result);
-            };
-        }
-    };
+      reader.onloadend = async () => {
+        setImage(reader.result);
+      };
+    }
+  };
 
-    const uploadProfilePic = async () => {
-        if (!image) {
-            toast.error('Please select a profile picture');
-            return;
-        }
-        try {
-            dispatch(showLoader());
-            const [response_data, status_code] = await updateProfilePicture(image);
-            dispatch(hideLoader());
-            if (status_code === 200) {
-                toast.success('Profile image updated successfully');
-            } else {
-                toast.error(response_data.message);
-            }
-        } catch (error) {
-            dispatch(hideLoader());
-            toast.error(error.message);
-        }
-    };
+  const uploadProfilePic = async () => {
+    if (!image) {
+      toast.error("Please select a profile picture");
+      return;
+    }
+    try {
+      dispatch(showLoader());
+      const [response_data, status_code] = await updateProfilePicture(image);
+      dispatch(hideLoader());
 
-    useEffect(() => {
-        if (user.profilePic) {
-            setImage(user.profilePic);
-        }
-    }, [user]);
+      if (status_code === 200) {
+        toast.success("Profile image updated successfully");
+      } else {
+        toast.error(response_data.message);
+      }
+    } catch (error) {
+      dispatch(hideLoader());
+      toast.error(error.message);
+    }
+  };
 
-    return (
-        <div className="profile-container">
-            <ProfileHeader />
-            <div className="profile-layout">
-                <ProfileSidebar />
-                <div className="profile-content">
-                    <div className="profile-pic-container">
-                        {image ? (
-                            <img src={image} alt="Profile Pic" className="user-profile-pic-upload" />
-                        ) : (
-                            <img src='images/profile.png' className="user-profile-pic-upload" />
-                        )}
-                    </div>
+  return (
+    <Box sx={{ display: "flex", flexDirection: "column", height: "100dvh", bgcolor: "background.default", color: "text.primary" }}>
+      <ProfileHeader />
+      <Box sx={{ display: "flex", flexGrow: 1 }}>
+        <ProfileSidebar />
+        <Box sx={{ flexGrow: 1, p: 3, display: "flex", flexDirection: "column", alignItems: "center" }}>
+          {/* Profile Picture Section */}
+          <Box sx={{ position: "relative", mb: 2 }}>
+            <Avatar
+              src={image || "/images/profile.png"}
+              sx={{ width: 120, height: 120, boxShadow: 3 }}
+            />
+            <IconButton
+              component="label"
+              sx={{
+                position: "absolute",
+                bottom: 0,
+                right: 0,
+                bgcolor: "#ff5b5b",
+                color: "#fff",
+                "&:hover": { bgcolor: "var(--primary-color);" , color: "black"},
+              }}
+            >
+              <PhotoCamera />
+              <input type="file" hidden onChange={handleImageUpload} />
+            </IconButton>
+          </Box>
 
-                    <div className="profile-info-container">
-                        <h2>{user?.firstName} {user?.lastName}</h2>
-                        <p><b>Email:</b> {user?.email}</p>
-                        <p><b>Account Created:</b> {moment(user?.createdAt).format('DD MMMM YYYY')}</p>
-                        <div className="select-profile-pic-container">
-                            <input type="file" onChange={handleImageUpload} />
-                            <button onClick={uploadProfilePic} className="upload-btn">Upload</button>
-                        </div>
-                    </div>
-                    <div className='profile-dummy-container'>
+          {/* Profile Info */}
+          <Typography variant="h5">{user?.firstName} {user?.lastName}</Typography>
+          <Typography variant="body1"><b>Email:</b> {user?.email}</Typography>
+          <Typography variant="body1"><b>Account Created:</b> {moment(user?.createdAt).format("DD MMMM YYYY")}</Typography>
 
-                    </div>
-                </div>
-            </div>
-        </div>
-    );
+          {/* Upload Button */}
+          <Button
+            variant="contained"
+            sx={{ mt: 2, bgcolor: "#ff5b5b", "&:hover": { bgcolor: "var(--primary-color);", color: 'black' } }}
+            onClick={uploadProfilePic}
+          >
+            Upload Profile Picture
+          </Button>
+        </Box>
+      </Box>
+    </Box>
+  );
 };
 
 export default Profile;

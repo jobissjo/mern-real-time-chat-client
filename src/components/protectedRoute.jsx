@@ -52,7 +52,7 @@ function ProtectedRoute({children}){
 
     const getCurrentUserAllChats = async () => {
         try {
-            const [response, status_code] = await getAllChats(user);
+            const [response, status_code] = await getAllChats();
             if (status_code === 200){
                 dispatch(setAllChats(response.data));
             }
