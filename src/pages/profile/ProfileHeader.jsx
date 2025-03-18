@@ -8,11 +8,13 @@ import { Chat as ChatIcon, PowerSettingsNew as LogoutIcon, Brightness4 as DarkMo
 import { useEffect, useState } from "react";
 import { getUserPreferences, updateUserPreferences } from "../../apiCalls/preference";
 import toast from "react-hot-toast";
+import { useDispatch, useSelector } from "react-redux";
+import { setPreference } from "../../redux/userSlice";
 
 const ProfileHeader = () => {
-
+    const {preference} = useSelector(state => state.userReducer);
     const navigate = useNavigate()
-    const [darkMode, setDarkMode] = useState(false)
+    const dispatch = useDispatch();
 
     const logOut = async () => {
         localStorage.removeItem('token')
@@ -20,29 +22,23 @@ const ProfileHeader = () => {
         // socket.emit('user-logout', user._id)
 
     }
-    const getPreferences = async () => {
-        try{
-            let response = await getUserPreferences();
-            if (response.status === 200){
-                console.log(response.data?.data?.isDarkMode, 'sssssssssssssssssssssssssss')
-                setDarkMode(response.data?.data?.isDarkMode);
-            }
-            else {
-                toast.error("Failed to fetch user preferences.")
-            }
-        }catch(e){
-            toast.error("Failed to fetch user preferences. Please try again later.")
-        }
-    }
+    
     useEffect( ()=> {
-        getPreferences()
-    })
+        if (preference?.isDarkMode) {
+            document.body.classList.add('dark-mode');
+            document.body.classList.remove('root');
+        } else {
+            document.body.classList.remove('dark-mode');
+            document.body.classList.add('root');
+        }
+    }, [preference?.isDarkMode])
     const updatePreference = async () => {
         try {
-            let response = await updateUserPreferences({ isDarkMode: !darkMode });
+            let response = await updateUserPreferences({ isDarkMode: !preference?.isDarkMode });
             if (response.status === 200) {
                 toast.success("Dark Mode preference updated successfully.");
-                getPreferences()
+                const preferenceResponse =await getUserPreferences()
+                dispatch(setPreference(preferenceResponse?.data.data));
             }
             else {
                 toast.error("Failed to update dark mode preference.")
@@ -55,15 +51,15 @@ const ProfileHeader = () => {
         <AppBar
             position="static"
             sx={{
-                backgroundColor: darkMode ? "#121212" : "#ff5b5b ",
+                backgroundColor: "var(--secondary-color)",
                 boxShadow: "none",
-                color: darkMode ? "#ffffff" : "#28282b",
+                color: "var(--text-color)",
             }}
         >
             <Toolbar>
                 {/* App Logo and Title */}
                 <Box
-                    sx={{ display: "flex", alignItems: "center", flexGrow: 1, cursor: "pointer" }}
+                    sx={{ display: "flex", alignItems: "center", flexGrow: 1, cursor: "pointer", marginLeft: "1rem" }}
                     onClick={() => navigate("/")}
                 >
                     <IconButton color="inherit">
@@ -79,7 +75,7 @@ const ProfileHeader = () => {
                     <DarkModeIcon sx={{ mr: 1 }} />
                     <FormControlLabel
                         control={
-                            <Switch checked={darkMode} onChange={updatePreference} color="default" />
+                            <Switch checked={preference?.isDarkMode} onChange={updatePreference} color="default" />
                         }
                     // label="Dark Mode"
                     />

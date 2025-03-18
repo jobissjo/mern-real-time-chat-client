@@ -71,7 +71,7 @@ const NotificationList = () => {
     };
 
     return (
-        <Box sx={{ display: "flex", flexDirection: "column", height: "100dvh" }}>
+        <Box sx={{ display: "flex", flexDirection: "column", height: "100dvh", background: 'var(--primary-color)' }}>
             <ProfileHeader />
             <Box sx={{ display: "flex", flex: 1 }}>
                 <ProfileSidebar />
@@ -82,7 +82,7 @@ const NotificationList = () => {
                         alignItems: "center",
                         mb: 3
                     }}>
-                        <Typography variant="h5">Notifications</Typography>
+                        <Typography variant="h5" sx={{color: 'var(--text-color)'}} >Notifications</Typography>
                         <Box>
                             <Button
                                 variant="contained"
@@ -108,7 +108,7 @@ const NotificationList = () => {
                     {loading ? (
                         <List>
                             {[1, 2, 3, 4].map((index) => (
-                                <Paper key={index} sx={{ p: 2, mb: 2 }}>
+                                <Paper key={index} sx={{ p: 2, mb: 2 , background:"var(--notification-read)" }}>
                                     <Skeleton variant="text" width="60%" height={20} />
                                     <Skeleton variant="text" width="40%" height={20} />
                                 </Paper>
@@ -119,7 +119,7 @@ const NotificationList = () => {
                             {notifications.map(notification => (
                                 <Paper key={notification._id} sx={{
                                     p: 2, mb: 2,
-                                    backgroundColor: notification.read ? "white" : "#f0f4ff",
+                                    backgroundColor: notification.read ? "var(--notification-read)" : "var(--notification-unread)",
                                     display: "flex",
                                     justifyContent: "space-between",
                                     alignItems: "center"

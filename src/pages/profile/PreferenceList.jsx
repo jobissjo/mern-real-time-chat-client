@@ -47,11 +47,11 @@ const PreferenceList = () => {
     }, []);
 
     return (
-        <Box>
+        <Box sx={{height: '100dvh'}}>
             <ProfileHeader />
-            <Box display="flex" >
+            <Box display="flex" sx={{}}>
                 <ProfileSidebar />
-                <Paper elevation={3} sx={{ p: 3, flex: 1 }}>
+                <Paper elevation={3} sx={{ p: 3, flex: 1, height: '100dvh', backgroundColor: 'var(--primary-color)' }}>
                     <Typography variant="h5" gutterBottom>
                         Preferences
                     </Typography>

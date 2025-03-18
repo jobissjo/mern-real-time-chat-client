@@ -21,23 +21,32 @@ import {
   Divider,
 } from '@mui/material';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
+import Skeleton from '@mui/material/Skeleton';
+import { decryptMessage } from '../../../utils/encryption';
+
 
 const UserList = ({ searchKey, onlineUsers, socket }) => {
   const { allChats, user: currentUser, selectedChat } = useSelector((state) => state.userReducer);
   const dispatch = useDispatch();
   const [friendsNotChattedYet, setFriendsNotChattedYet] = useState([]);
+  const [isLoading, setIsLoading] = useState(false);
+  const [decryptedAllChats, setDecryptedAllChats] = useState([]);
 
   useEffect(() => {
     fetchNotChattedFriends();
+    decryptingAllChats(allChats);
   }, []);
 
   const fetchNotChattedFriends = async () => {
     try {
+      setIsLoading(true);
       const response = await getNotChattedFriendsList();
+      setIsLoading(false)
       if (response.status === 200) {
         setFriendsNotChattedYet(response.data.data);
       }
     } catch (err) {
+      setIsLoading(false)
       toast.error(err.message);
     }
   };
@@ -46,7 +55,7 @@ const UserList = ({ searchKey, onlineUsers, socket }) => {
     try {
       const members = [currentUser._id, member_id];
       const [response, status_code] = await createNewChat(members);
-      if (status_code === 200) {
+      if (status_code === 201) {
         toast.success('Chat started successfully');
       } else {
         toast.error(response.message);
@@ -70,7 +79,7 @@ const UserList = ({ searchKey, onlineUsers, socket }) => {
 
     const handleMsgCountUpdated = (message) => {
       console.log('message:', message, "allChats", allChats);
-      
+
       let tempAllChats = allChats.map((chat) => chat);
 
       if (message.ChatId != selectedChat?._id) {
@@ -92,7 +101,7 @@ const UserList = ({ searchKey, onlineUsers, socket }) => {
         tempAllChats = [latestChat, ...otherChats];
       }
       console.log("tempAllChats", tempAllChats);
-      
+
       dispatch(setAllChats(tempAllChats));
     }
 
@@ -103,84 +112,154 @@ const UserList = ({ searchKey, onlineUsers, socket }) => {
     }
   }, [allChats, selectedChat])
 
-  const getChatListData = () => {
-    if (!searchKey) return allChats;
-    return allChats.filter((chat) => {
-      const member = chat.members.find((mem) => mem._id !== currentUser._id);
-      return (
-        member?.firstName?.toLowerCase().includes(searchKey.toLowerCase()) ||
-        member?.lastName?.toLowerCase().includes(searchKey.toLowerCase())
-      );
-    });
-  };
+  const decryptingAllChats = async (allChatList) => {
+
+    allChatList = await Promise.all(allChatList.map(async (chat) => {
+      if (chat.lastMessage) {
+        const parsedText = JSON.parse(chat.lastMessage.text);
+        const decryptedMessage = await decryptMessage(parsedText.encryptedMessage, parsedText.iv, chat.encryptedKey);
+        const lastMessage = {...chat.lastMessage, text: decryptedMessage}
+        chat = {...chat, lastMessage }
+      }
+      return chat;
+    }))
+    console.log(allChatList, 'all chat list');
+    
+    if (searchKey) {
+      allChatList.filter((chat) => {
+        const member = chat.members.find((mem) => mem._id !== currentUser._id);
+        return (
+          member?.firstName?.toLowerCase().includes(searchKey.toLowerCase()) ||
+          member?.lastName?.toLowerCase().includes(searchKey.toLowerCase())
+        );
+      });
+    }
+    console.log("decrypting message:", allChatList);
+
+    setDecryptedAllChats(allChatList);
+
+  }
+
 
   return (
-    <Box sx={{ backgroundColor: 'var(--primary-color)', borderRadius: '8px', p: 2, }}>
-      {/* Chat List */}
-      <Accordion defaultExpanded>
-        <AccordionSummary expandIcon={<ExpandMoreIcon />} style={{ backgroundColor: 'var(--primary-color)' }}>
-          <Typography variant="h6">Chats</Typography>
-        </AccordionSummary>
-        <AccordionDetails style={{ backgroundColor: 'var(--primary-color)', color: "var(--text-color)" }} >
-          <List sx={{ backgroundColor: 'var(--primary-color)', borderRadius: '8px',  color: "var(--text-color)" }}>
-            {getChatListData()?.map((chat, index) => {
-              const user = chat.members.find((mem) => mem._id !== currentUser._id);
-              let messageOrMail;
-              if (chat?.lastMessage) {
-                messageOrMail =
-                  chat?.lastMessage?.sender === currentUser._id
-                    ? `You: ${chat?.lastMessage?.text}`
-                    : chat?.lastMessage?.text;
-              } else {
-                messageOrMail = currentUser.email;
-              }
-              return (
-                <React.Fragment key={user._id}>
-                  <ListItem onClick={() => openChat(user._id)} sx={{ cursor: 'pointer' }}>
+    <>
+      {isLoading ? (
+        <Box sx={{ backgroundColor: 'var(--primary-color)', borderRadius: '8px', p: 2 }}>
+          <Accordion defaultExpanded>
+            <AccordionSummary expandIcon={<ExpandMoreIcon />} style={{ backgroundColor: 'var(--primary-color)' }}>
+              <Typography variant="h6">Chats</Typography>
+            </AccordionSummary>
+            <AccordionDetails style={{ backgroundColor: 'var(--primary-color)', color: "var(--text-color)" }}>
+              {[1, 2, 3].map((item) => (
+                <React.Fragment key={item}>
+                  <ListItem>
                     <ListItemAvatar>
-                      <Badge color="success" variant={onlineUsers.includes(user._id) ? 'dot' : 'standard'}>
-                        <Avatar src={user.profilePic}>{user.firstName[0]}</Avatar>
-                      </Badge>
+                      <Skeleton variant="circular" width={40} height={40} />
                     </ListItemAvatar>
                     <ListItemText
-                      style={{color: 'var(--text-color)'}}
-                      primary={`${user.firstName} ${user.lastName}`}
-                      secondary={messageOrMail}
+                      primary={<Skeleton variant="text" width="60%" />}
+                      secondary={<Skeleton variant="text" width="40%" />}
                     />
                   </ListItem>
-                  {index < getChatListData().length - 1 && <Divider />} {/* Add divider between chat items */}
                 </React.Fragment>
-              );
-            })}
-          </List>
-        </AccordionDetails>
-      </Accordion>
+              ))}
+            </AccordionDetails>
+          </Accordion>
+          <Accordion defaultExpanded>
+            <AccordionSummary expandIcon={<ExpandMoreIcon />} style={{ backgroundColor: 'var(--primary-color)' }}>
+              <Typography variant="h6">Friends</Typography>
+            </AccordionSummary>
+            <AccordionDetails style={{ backgroundColor: 'var(--primary-color)' }}>
+              {[1].map((item) => (
+                <React.Fragment key={item}>
+                  <ListItem>
+                    <ListItemAvatar>
+                      <Skeleton variant="circular" width={40} height={40} />
+                    </ListItemAvatar>
+                    <ListItemText primary={<Skeleton variant="text" width="60%" />} />
+                    <Skeleton variant="rectangular" width={80} height={36} sx={{ borderRadius: 1 }} />
+                  </ListItem>
+                  <Divider />
+                </React.Fragment>
+              ))}
+            </AccordionDetails>
+          </Accordion>
 
-      {/* Friends List */}
-      <Accordion>
-        <AccordionSummary expandIcon={<ExpandMoreIcon />} style={{ backgroundColor: 'var(--primary-color)' }}>
-          <Typography variant="h6">Friends</Typography>
-        </AccordionSummary>
-        <AccordionDetails style={{ backgroundColor: 'var(--primary-color)' }}>
-          <List sx={{ backgroundColor: 'var(--primary-color)', borderRadius: '8px' }}>
-            {friendsNotChattedYet.map((friend, index) => (
-              <React.Fragment key={friend._id}>
-                <ListItem>
-                  <ListItemAvatar>
-                    <Avatar src={friend.profilePic}>{friend.firstName[0]}</Avatar>
-                  </ListItemAvatar>
-                  <ListItemText primary={`${friend.firstName} ${friend.lastName}`} />
-                  <Button variant="contained" color="primary" onClick={() => startNewChat(friend._id)}>
-                    Start Chat
-                  </Button>
-                </ListItem>
-                {index < friendsNotChattedYet.length - 1 && <Divider />} {/* Add divider between friend items */}
-              </React.Fragment>
-            ))}
-          </List>
-        </AccordionDetails>
-      </Accordion>
-    </Box>
+        </Box>
+      )
+        :
+        <Box sx={{ backgroundColor: 'var(--primary-color)', borderRadius: '8px', p: 2, }}>
+          {/* Chat List */}
+          <Accordion defaultExpanded>
+            <AccordionSummary expandIcon={<ExpandMoreIcon />} style={{ backgroundColor: 'var(--primary-color)' }}>
+              <Typography variant="h6" style={{color: 'var(--text-color)'}}>Chats</Typography>
+            </AccordionSummary>
+            <AccordionDetails style={{ backgroundColor: 'var(--primary-color)', color: "var(--text-color)" }} >
+              <List sx={{ backgroundColor: 'var(--primary-color)', borderRadius: '8px', color: "var(--text-color)" }}>
+                {decryptedAllChats?.map((chat, index) => {
+                  const user = chat.members.find((mem) => mem._id !== currentUser._id);
+                  let messageOrMail;
+                  if (chat?.lastMessage) {
+                    messageOrMail =
+                      chat?.lastMessage?.sender === currentUser._id
+                        ? `You: ${chat?.lastMessage?.text}`
+                        : chat?.lastMessage?.text;
+                  } else {
+                    messageOrMail = currentUser.email;
+                  }
+                  return (
+                    <React.Fragment key={user._id}>
+                      <ListItem onClick={() => openChat(user._id)} sx={{ cursor: 'pointer' }}>
+                        <ListItemAvatar>
+                          <Badge color="success" variant={onlineUsers.includes(user._id) ? 'dot' : 'standard'}>
+                            <Avatar src={user.profilePic}>{user.firstName[0]}</Avatar>
+                          </Badge>
+                        </ListItemAvatar>
+                        <ListItemText
+                          sx={{color: 'var(--text-color)', '& .MuiListItemText-secondary': {
+                            color: 'var(--sub-text-color)',
+                          }}}
+                          primary={`${user.firstName} ${user.lastName}`}
+                          secondary={messageOrMail}
+                        />
+                      </ListItem>
+                      {index < decryptedAllChats.length - 1 && <Divider />} {/* Add divider between chat items */}
+                    </React.Fragment>
+                  );
+                })}
+              </List>
+            </AccordionDetails>
+          </Accordion>
+
+          {/* Friends List */}
+          <Accordion defaultExpanded>
+            <AccordionSummary expandIcon={<ExpandMoreIcon />} style={{ backgroundColor: 'var(--primary-color)' }}>
+              <Typography variant="h6" style={{color: 'var(--text-color)'}}>Friends</Typography>
+            </AccordionSummary>
+            <AccordionDetails style={{ backgroundColor: 'var(--primary-color)' }}>
+              <List sx={{ backgroundColor: 'var(--primary-color)', borderRadius: '8px' }}>
+                {friendsNotChattedYet.map((friend, index) => (
+                  <React.Fragment key={friend._id}>
+                    <ListItem>
+                      <ListItemAvatar>
+                        <Avatar src={friend.profilePic}>{friend.firstName[0]}</Avatar>
+                      </ListItemAvatar>
+                      <ListItemText sx={{color: 'var(--text-color)', '& .MuiListItemText-secondary': {
+                            color: 'var(--sub-text-color)',
+                          }}} primary={`${friend.firstName} ${friend.lastName}`} />
+                      <Button variant="contained" color="primary" onClick={() => startNewChat(friend._id)}>
+                        Start Chat
+                      </Button>
+                    </ListItem>
+                    {index < friendsNotChattedYet.length - 1 && <Divider />} {/* Add divider between friend items */}
+                  </React.Fragment>
+                ))}
+              </List>
+            </AccordionDetails>
+          </Accordion>
+        </Box>
+      }
+    </>
   );
 };
 

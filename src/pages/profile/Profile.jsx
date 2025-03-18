@@ -54,7 +54,7 @@ const Profile = () => {
   };
 
   return (
-    <Box sx={{ display: "flex", flexDirection: "column", height: "100dvh", bgcolor: "background.default", color: "text.primary" }}>
+    <Box sx={{ display: "flex", flexDirection: "column", height: "100dvh", background: 'var(--primary-color)', color: "text.primary" }}>
       <ProfileHeader />
       <Box sx={{ display: "flex", flexGrow: 1 }}>
         <ProfileSidebar />
@@ -82,9 +82,9 @@ const Profile = () => {
           </Box>
 
           {/* Profile Info */}
-          <Typography variant="h5">{user?.firstName} {user?.lastName}</Typography>
-          <Typography variant="body1"><b>Email:</b> {user?.email}</Typography>
-          <Typography variant="body1"><b>Account Created:</b> {moment(user?.createdAt).format("DD MMMM YYYY")}</Typography>
+          <Typography sx={{color: 'var(--text-color)'}} variant="h5">{user?.firstName} {user?.lastName}</Typography>
+          <Typography sx={{color: 'var(--text-color)'}} variant="body1"><b>Email:</b> {user?.email}</Typography>
+          <Typography sx={{color: 'var(--text-color)'}} variant="body1"><b>Account Created:</b> {moment(user?.createdAt).format("DD MMMM YYYY")}</Typography>
 
           {/* Upload Button */}
           <Button

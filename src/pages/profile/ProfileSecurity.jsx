@@ -29,12 +29,16 @@ const ProfileSecurity = () => {
         try {
             const response = await changeCurrentPassword({ newPassword, oldPassword: currentPassword });
             if (response.status === 200) {
+                setCurrentPassword('');
+                setNewPassword('');
+                setConfirmPassword(''); 
                 toast.success('Password updated successfully');
             } else {
                 toast.error(response.data.message);
             }
         } catch (error) {
-            toast.error(error.message);
+            debugger
+            toast.error(error.response?.data?.message);
         }
     };
 
@@ -44,19 +48,19 @@ const ProfileSecurity = () => {
     };
 
     return (
-        <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
+        <Box sx={{ display: 'flex', flexDirection: 'column',  }}>
             <ProfileHeader />
             <Box sx={{ display: 'flex', gap: 2 }}>
                 <ProfileSidebar />
-                <Box sx={{ flexGrow: 1, p: 3, backgroundColor: 'background.paper', borderRadius: 2, boxShadow: 1 }}>
-                    <Typography variant="h5">Profile Security</Typography>
-                    <Tabs value={activeTab} onChange={(_, newValue) => setActiveTab(newValue)}>
-                        <Tab label="Change Password" />
+                <Box sx={{ flexGrow: 1, p: 3, height: '100dvh', backgroundColor: 'var(--primary-color)', borderRadius: 2, boxShadow: 1 }}>
+                    <Typography variant="h5" sx={{color: 'var(--text-color)'}}>Profile Security</Typography>
+                    <Tabs value={activeTab} sx={{color: 'var(--text-color)'}} onChange={(_, newValue) => setActiveTab(newValue)}>
+                        <Tab label="Change Password"  />
                         <Tab label="Two-Factor Authentication" />
                     </Tabs>
                     {activeTab === 0 && (
                         <Box sx={{ mt: 3, display: 'flex', flexDirection: 'column', gap: 2 }}>
-                            <Typography variant="h6">Password Management</Typography>
+                            <Typography variant="h6" sx={{color: 'var(--text-color)'}}>Password Management</Typography>
                             <TextField
                                 type="password"
                                 label="Current Password"
@@ -65,6 +69,9 @@ const ProfileSecurity = () => {
                                 helperText={errors.currentPassword}
                                 value={currentPassword}
                                 onChange={(e) => setCurrentPassword(e.target.value)}
+                                sx={{color: 'var(--text-color)', '& input::placeholder': {
+                                    color: 'var(--sub-text-color)',
+                                }}}
                             />
                             <TextField
                                 type="password"
@@ -74,6 +81,9 @@ const ProfileSecurity = () => {
                                 helperText={errors.newPassword}
                                 value={newPassword}
                                 onChange={(e) => setNewPassword(e.target.value)}
+                                sx={{color: 'var(--text-color)', '& input::placeholder': {
+                                    color: 'var(--sub-text-color)',
+                                }}}
                             />
                             <TextField
                                 type="password"
@@ -83,16 +93,19 @@ const ProfileSecurity = () => {
                                 helperText={errors.confirmPassword}
                                 value={confirmPassword}
                                 onChange={(e) => setConfirmPassword(e.target.value)}
+                                sx={{color: 'var(--text-color)', '& input::placeholder': {
+                                    color: 'var(--sub-text-color)',
+                                }}}
                             />
                             <Button variant="contained" style={{backgroundColor: '#ff5b5b'}} onClick={handlePasswordUpdate}>Update Password</Button>
                         </Box>
                     )}
                     {activeTab === 1 && (
                         <Box sx={{ mt: 3, display: 'flex', flexDirection: 'column', gap: 2 }}>
-                            <Typography variant="h6">Two-Factor Authentication</Typography>
+                            <Typography variant="h6"sx={{color: 'var(--text-color)'}} >Two-Factor Authentication</Typography>
                             <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
-                                <Typography>{twoFactorEnabled ? 'Disable 2FA' : 'Enable 2FA'}</Typography>
-                                <Switch checked={twoFactorEnabled} onChange={() => setShowDialog(true)} />
+                                <Typography sx={{color: 'var(--text-color)'}}>{twoFactorEnabled ? 'Disable 2FA' : 'Enable 2FA'}</Typography>
+                                <Switch sx={{color: 'var(--text-color)'}} checked={twoFactorEnabled} onChange={() => setShowDialog(true)} />
                             </Box>
                         </Box>
                     )}

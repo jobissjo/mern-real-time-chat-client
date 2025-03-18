@@ -2,7 +2,7 @@ import React, { useState } from 'react'
 import { Link } from 'react-router-dom'
 import { loginUser } from '../../apiCalls/auth'
 import toast from 'react-hot-toast';
-import { useNavigate } from 'react-router-dom'; 
+import { useNavigate } from 'react-router-dom';
 import Button from '@mui/material/Button';
 import { TextField, InputAdornment, IconButton } from "@mui/material";
 import LoginIcon from '@mui/icons-material/Login';
@@ -25,7 +25,7 @@ const Login = () => {
     if (!user.password) {
       errors.password = "Password is required";
     }
-    if(user?.password && user?.password.length < 8){
+    if (user?.password && user?.password.length < 8) {
       errors.password = "Password should be at least 8 characters long";
     }
 
@@ -35,25 +35,25 @@ const Login = () => {
       return;
     }
     setLoading(true);
-    setTimeout(async () => {
-      setLoading(false);
-      [response, status_code] = await loginUser(user);
-      if (status_code == 200) {
-        toast.success(response.message)
-        setUser({ email: '', password: '' })
 
-        setTimeout(() => {
-          console.log("try to navigate to home page");
+    [response, status_code] = await loginUser(user);
+    setLoading(false);
+    if (status_code == 200) {
+      toast.success(response.message)
+      setUser({ email: '', password: '' })
 
-          navigate('/')
-        }, [1000])
-      }
-      else {
-        console.log(response);
-        
-        toast.error(response?.message)
-      }
-    }, 1000)
+      setTimeout(() => {
+        console.log("try to navigate to home page");
+
+        navigate('/')
+      }, [1000])
+    }
+    else {
+      console.log(response);
+
+      toast.error(response?.message)
+    }
+
 
 
 
@@ -88,7 +88,7 @@ const Login = () => {
               error={formError.password}
               helperText={formError.password}
               fullWidth
-              margin="normal" 
+              margin="normal"
               // type='password'
               type={showPassword ? "text" : "password"}
               slotProps={{
@@ -97,10 +97,10 @@ const Login = () => {
                     <InputAdornment position="end">
                       <IconButton
                         aria-label="toggle password visibility"
-                        onClick={()=> setShowPassword(prev => !prev)}
+                        onClick={() => setShowPassword(prev => !prev)}
                         edge="end"
                       >
-                        {showPassword ? <Visibility />: <VisibilityOff /> }
+                        {showPassword ? <Visibility /> : <VisibilityOff />}
                       </IconButton>
                     </InputAdornment>
                   ),
@@ -109,7 +109,7 @@ const Login = () => {
 
 
             />
-            
+
             {/* <button>Login</button> */}
             <Button
               type="submit"

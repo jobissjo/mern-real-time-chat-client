@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react'
 import PropTypes from 'prop-types';
-import { useSelector } from 'react-redux'
+import { useDispatch, useSelector } from 'react-redux'
 import { useNavigate } from 'react-router-dom';
 import { clearAllNotificationOfUser, getAllNotification, readNotification } from '../../../apiCalls/notification';
 import toast from 'react-hot-toast';
@@ -15,15 +15,16 @@ import {
   Avatar, Box, Divider, ListItemIcon, ListItemText,
 } from "@mui/material";
 import MarkAsReadIcon from "@mui/icons-material/DoneAll";
+import { setPreference } from "../../../redux/userSlice.js";
 
 const Header = ({ socket }) => {
-  const { user } = useSelector(state => state.userReducer);
+  const { user, preference } = useSelector(state => state.userReducer);
   const [showNotification, setShowNotification] = useState(false);
   const [notifications, setNotifications] = useState([]);
   const [unreadNotificationCount, setUnreadNotificationCount] = useState(0);
   const navigate = useNavigate();
-  const [darkMode, setDarkMode] = useState(false);
   const [anchorEl, setAnchorEl] = useState(null);
+  const dispatch = useDispatch();
   function getFullName() {
     return user.firstName + " " + user.lastName;
   }
@@ -50,25 +51,39 @@ const Header = ({ socket }) => {
       console.log(error)
     }
   }
-  // UPDATE DARK THEME
+ 
+  
+  
+  
   const updatePreference = async () => {
     try {
-      let response = await updateUserPreferences({ isDarkMode: !darkMode })
+      let response = await updateUserPreferences({ isDarkMode: !preference?.isDarkMode })
       if (response.status === 200) {
-        toast.success(response.data?.message)
-        getPreference()
-
+        const preferenceResponse = await getUserPreferences()
+        dispatch(setPreference(preferenceResponse.data?.data));
+        
       }
     }
     catch (error) {
-      toast.error(error.message)
+      toast.error(error.message);
     }
   }
 
   useEffect(() => {
     getNotification();
-    getPreference();
   }, [showNotification, unreadNotificationCount])
+
+  useEffect(() => {
+    console.log(preference, 'preference');
+    
+    if (preference?.isDarkMode) {
+      document.body.classList.add('dark-mode');
+      document.body.classList.remove('root');
+    } else {
+      document.body.classList.add('root');
+      document.body.classList.remove('dark-mode');
+    }
+  }, [preference?.isDarkMode])
 
   const markReadNotification = async (notificationId) => {
     try {
@@ -86,29 +101,12 @@ const Header = ({ socket }) => {
   }
 
   // FETCH USER PREFERENCE  
-  const getPreference = async () => {
-    try {
-      let response = await getUserPreferences()
-      if (response.status === 200) {
-        setDarkMode(response.data?.data?.isDarkMode);
-        if(darkMode){
-          
-          document.body.classList.toggle('dark-mode');
-        }
-      }
-      else {
-        toast.error(response.error.message)
-      }
-    } catch (error) {
-      console.error('Error fetching preferences:', error);
-    }
-  }
 
   const clearAllNotifications = async () => {
     try {
       let response = await clearAllNotificationOfUser()
       if (response.status === 200) {
-        toast.success(response.data?.message ?? 'All notifications cleared')
+        // toast.success(response.data?.message ?? 'All notifications cleared')
         setUnreadNotificationCount(0);
         getNotification();
       }
@@ -119,7 +117,7 @@ const Header = ({ socket }) => {
   }
 
   return (
-    <AppBar position="static" sx={{ backgroundColor: darkMode ? "#121212" : "var(--secondary-color);" }}>
+    <AppBar position="static" sx={{ backgroundColor:  "var(--secondary-color);" }}>
       <Toolbar>
         <IconButton color="inherit" onClick={() => navigate("/")}>
           <ChatIcon />
@@ -130,7 +128,7 @@ const Header = ({ socket }) => {
 
         <Box sx={{ display: "flex", alignItems: "center", mr: 2 }}>
           <DarkModeIcon sx={{ mr: 1 }} />
-          <Switch checked={darkMode} onChange={updatePreference} color="default" />
+          <Switch checked={preference?.isDarkMode} onChange={updatePreference} color="default" />
         </Box>
 
         <IconButton color="inherit" onClick={(event) => setAnchorEl(event.currentTarget)}>
@@ -175,7 +173,7 @@ const Header = ({ socket }) => {
             <ListItemText primary="Mark All as Read" />
           </MenuItem>
         </Menu>
-        
+
         <Box sx={{ display: "flex", alignItems: "center", ml: 2 }}>
           <Typography variant="subtitle1" sx={{ mr: 2 }}>
             {getFullName()}

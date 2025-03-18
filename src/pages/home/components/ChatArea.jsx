@@ -31,7 +31,8 @@ import {
   Image as ImageIcon,
 } from "@mui/icons-material";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
-import { encryptMessage } from "../../../utils/encryption";
+import { encryptMessage,decryptMessage } from "../../../utils/encryption";
+import Skeleton from '@mui/material/Skeleton';
 
 const ChatArea = ({ socket }) => {
   const { selectedChat, user, allChats } = useSelector((state) => state.userReducer);
@@ -43,21 +44,41 @@ const ChatArea = ({ socket }) => {
   const [typingData, setTypingData] = useState(null);
   const [anchorEl, setAnchorEl] = useState(null);
   const open = Boolean(anchorEl);
+  const [decryptedMessages, setDecryptedMessages] = useState({});
+  const [isLoading, setIsLoading] = useState(false);
 
   const dispatch = useDispatch();
 
   const getAllMessageOfSelectedChat = async (chatId) => {
     try {
+      setIsLoading(true);
       const [response, status_code] = await getAllMessages(chatId);
       if (status_code === 200) {
-        setAllMessage(response.data);
+        await decryptingMessage(response.data);
+        
       } else {
         setAllMessage([]);
       }
     } catch (err) {
+      setIsLoading(false)
       console.warn("Error fetching messages:", err);
+    }finally{
+      setIsLoading(false)
     }
   };
+
+  const decryptingMessage = async (messages) => {
+    console.log(messages, selectedChat.encryptedKey, 'ccccccccccccccccccc');
+    
+    const decryptedMessage = await Promise.all(
+      messages.map(async (m) => {
+        let currentMsg = JSON.parse(m.text);
+        const decrypted = await decryptMessage(currentMsg.encryptedMessage, currentMsg.iv, selectedChat.encryptedKey);
+        return {...m, text:decrypted};
+      })
+    )
+    setAllMessage(decryptedMessage)
+  }
 
   const formatTime = (timestamp) => {
     const now = moment();
@@ -287,7 +308,27 @@ const ChatArea = ({ socket }) => {
             }}
           >
             <List>
-              {allMessage.map((message, index) => {
+              {isLoading ? (
+                Array.from(new Array(6)).map((_, index) =>(
+                  <ListItem key={index} sx={{ justifyContent: index % 2 === 0 ? "flex-start" : "flex-end" }}>
+                    <Box
+                      sx={{
+                        display: "flex",
+                        flexDirection: "column",
+                        alignItems: index % 2 === 0 ? "flex-end" : "flex-start",
+                        maxWidth: "80%",
+                        whiteSpace: "pre-wrap",
+                      }}
+                    >
+                      {/* <Skeleton variant="rounded" width="100%" height={40} sx={{bgcolor: "rgba(0,0,0,0.1)", borderRadius: '10px'}} /> */}
+
+                      <Skeleton variant="rectangular" width={80} height={36} sx={{ borderRadius: 1 }} />
+
+                    </Box>
+                  </ListItem>  
+                ))):
+              
+              allMessage.map((message, index) => {
                 const isCurrentUserSender = message.sender === user._id;
                 return (
                   <ListItem
@@ -365,12 +406,12 @@ const ChatArea = ({ socket }) => {
           )}
 
           {/* Message Input Area */}
-          <Box sx={{ p: 2, borderTop: "1px solid #ddd" }}>
+          <Box sx={{ p: 2, borderTop: "1px solid #ddd",  }}>
             <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
               <IconButton onClick={toggleIconElement}>
                 <EmojiIcon />
               </IconButton>
-              <TextField
+              <TextField style={{color: "var(--text-color)"}}
                 fullWidth
                 placeholder="Type a message"
                 value={message}
