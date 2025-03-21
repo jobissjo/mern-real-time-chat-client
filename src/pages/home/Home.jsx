@@ -6,7 +6,7 @@ import { useSelector } from 'react-redux';
 import { io } from 'socket.io-client';
 import { useMediaQuery } from '@mui/material';
 
-const socket = io('ws://determines-administration-forecasts-cf.trycloudflare.com');
+const socket = io('wss://sink-playback-ave-failure.trycloudflare.com');
 
 const Home = () => {
   const { user, selectedChat } = useSelector((state) => state.userReducer);

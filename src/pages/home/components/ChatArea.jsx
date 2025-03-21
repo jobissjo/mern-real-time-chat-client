@@ -101,9 +101,13 @@ const ChatArea = ({ socket }) => {
     if (selectedChat?.lastMessage?.sender !== user._id) {
       clearUnreadMessage();
     }
-    const handleReceiveMessage = (message) => {
+    const handleReceiveMessage = async (message) => {
       if (selectedChat._id === message.chatId) {
-        setAllMessage((prevMessage) => [...prevMessage, message]);
+        console.log("received message", message);
+        const parsedMessage = JSON.parse(message?.text)
+        const decryptedMessage = await decryptMessage(parsedMessage.encryptedMessage, parsedMessage.iv, selectedChat.encryptedKey);
+        const newMessage ={...message, text: decryptedMessage}
+        setAllMessage((prevMessage) => [...prevMessage, newMessage]);
       }
       if (selectedChat?._id === message.chatId && message.sender !== user._id) {
         clearUnreadMessage();

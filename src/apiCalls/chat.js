@@ -26,3 +26,9 @@ export const clearUnreadMessageCount = async (chatId)=> {
         return [error.response.data, error.status];
     }
 }
+
+export const getChatMessage = async (chatId)=> {
+    
+    return await axiosInstance.get(`/api/chat/get-all-chats/${chatId}`);
+    
+}

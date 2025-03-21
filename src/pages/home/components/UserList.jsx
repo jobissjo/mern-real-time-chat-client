@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import toast from 'react-hot-toast';
-import { createNewChat } from '../../../apiCalls/chat';
+import { createNewChat, getChatMessage } from '../../../apiCalls/chat';
 import { setAllChats, setSelectedChat } from '../../../redux/userSlice';
 import { getNotChattedFriendsList } from '../../../apiCalls/user';
 import PropTypes from 'prop-types';
@@ -105,10 +105,33 @@ const UserList = ({ searchKey, onlineUsers, socket }) => {
       dispatch(setAllChats(tempAllChats));
     }
 
-    socket.on('message-count-updated', handleMsgCountUpdated)
+    const handleReceiveMessage = async (message) => {
+      const parsedText = JSON.parse(message?.text);
+      const chatInfo = await getChatMessage(message?.chatId);
+      const decryptedMessage = await decryptMessage(parsedText.encryptedMessage, parsedText.iv, chatInfo._id);
+      const decryptedLastMsg = {...message, text: decryptedMessage}
+
+      const allDecryptedChats = decryptedAllChats?.map(decryptChat => {
+        if (decryptChat._id === message.chat._id) {
+          return {
+           ...decryptChat,
+            unreadMessageCount: decryptChat?.unreadMessageCount? decryptChat.unreadMessageCount + 1 : 1,
+            lastMessage: decryptedLastMsg
+          }
+        }
+        return decryptChat;
+      })
+
+      setDecryptedAllChats(allDecryptedChats)
+      
+    }
+
+    socket.on('message-count-updated', handleMsgCountUpdated);
+    socket.on('receive-message', handleReceiveMessage);
 
     return () => {
-      socket.off('message-count-updated', handleMsgCountUpdated)
+      socket.off('message-count-updated', handleMsgCountUpdated);
+      socket.off('receive-message', handleReceiveMessage);
     }
   }, [allChats, selectedChat])
 

@@ -5,21 +5,26 @@ import ProfileHeader from "./ProfileHeader";
 import "./profile.css";
 import { getUserPreferences, updateUserPreferences } from "../../apiCalls/preference";
 import toast from "react-hot-toast";
+import { useDispatch, useSelector } from "react-redux";
+import { setPreference } from "../../redux/userSlice";
 
 const PreferenceList = () => {
+    const {preference} = useSelector(state => state.userReducer);
     const [isDarkMode, setIsDarkMode] = useState(false);
     const [isNotification, setIsNotification] = useState(true);
     const [language, setLanguage] = useState("en");
     const [isLastSeen, setIsLastSeen] = useState(true);
+    const dispatch = useDispatch();
 
     const fetchUserPreference = async () => {
         try {
             const response = await getUserPreferences();
             if (response.status === 200) {
                 toast.success(response.data?.message);
-                setIsDarkMode(response.data.data?.isDarkMode ?? false);
-                setIsNotification(response.data.data?.isNotification ?? true);
-                setLanguage(response.data.data?.language);
+                dispatch(setPreference(response.data?.data))
+                // setIsDarkMode(response.data.data?.isDarkMode ?? false);
+                // setIsNotification(response.data.data?.isNotification ?? true);
+                // setLanguage(response.data.data?.language);
             } else {
                 toast.error(response.data.message);
             }
@@ -42,9 +47,11 @@ const PreferenceList = () => {
         }
     };
 
-    useEffect(() => {
-        fetchUserPreference();
-    }, []);
+    // useEffect(() => {
+    //     console.log("preference:", preference);
+        
+    //     fetchUserPreference();
+    // }, []);
 
     return (
         <Box sx={{height: '100dvh'}}>
@@ -57,19 +64,19 @@ const PreferenceList = () => {
                     </Typography>
 
                     <FormControlLabel
-                        control={<Switch checked={isDarkMode} onChange={() => updatePreferences({ isDarkMode: !isDarkMode })} />}
+                        control={<Switch checked={preference?.isDarkMode} onChange={() => updatePreferences({ isDarkMode: !preference?.isDarkMode })} />}
                         label="Dark Mode"
                     />
 
                     <FormControlLabel
-                        control={<Switch checked={isNotification} onChange={() => setIsNotification((prev) => !prev)} />}
+                        control={<Switch checked={preference?.isNotification} onChange={() => setIsNotification((prev) => !prev)} />}
                         label="Notifications"
                     />
 
                     <Box mt={2}>
                         <Typography variant="body1">Language</Typography>
                         <Select
-                            value={language}
+                            value={preference?.language}
                             onChange={(e) => setLanguage(e.target.value)}
                             fullWidth
                             sx={{ mt: 1 }}
@@ -82,7 +89,7 @@ const PreferenceList = () => {
                     </Box>
 
                     <FormControlLabel
-                        control={<Switch checked={isLastSeen} onChange={() => setIsLastSeen((prevVal) => !prevVal)} />}
+                        control={<Switch checked={preference?.isLastSeenShow} onChange={() =>  updatePreferences({isLastSeenShow:!preference.isLastSeenShow})} />}
                         label="Show Last Seen"
                     />
                     <Typography variant="caption" color="error">
