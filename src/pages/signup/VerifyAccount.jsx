@@ -3,64 +3,71 @@ import { Link, useLocation, useNavigate } from 'react-router-dom';
 import OtpInput from 'react-otp-input';
 import { signupUser } from '../../apiCalls/auth';
 import toast from 'react-hot-toast';
-import { useDispatch } from 'react-redux';
-import { hideLoader, showLoader } from '../../redux/loaderSlice';
+import { Button, Box, Typography } from '@mui/material';
+
 
 const VerifyAccount = () => {
   const [otp, setOtp] = useState('');
   const location = useLocation()
   const navigate = useNavigate()
-  const dispatch = useDispatch()
   const user = location.state.user;
-  console.log("user:", user);
-  
+  const [loading, setLoading] = useState(false);
 
   async function onFormSubmit(event) {
     event.preventDefault()
-    const data = {...user, otp}
-    const [response, statuCode] = await signupUser(data);
-    if (statuCode === 200){
-      toast.success("Account created successfully");
-      dispatch(showLoader())
-      setTimeout(()=> {
-        dispatch(hideLoader())
-        navigate('/login')
-      },1000)
+    try {
+      const data = { ...user, otp }
+      setLoading(true);
+      const response = await signupUser(data);
+      setLoading(false);
+      if (response.status === 200) {
+        toast.success("Account created successfully");
+        setTimeout(() => {
+          navigate('/login')
+        }, 500)
+      }
     }
-    else{
-      toast.warning(response?.message ?? 'Something went wrong')
+    catch (error) {
+      setLoading(false);
+      toast.error(error?.response?.data?.message ?? 'Something went wrong')
     }
   }
 
   return (
-    <div className="container">
+    <Box className="container">
       <div className="container-back-img"></div>
       <div className="container-back-color"></div>
-      <div className="card">
-        <div className="card_title">
-          <h1>Verify Account</h1>
-        </div>
-        <div className="form">
-          <form onSubmit={onFormSubmit}>
-            <div className="column">
-              <OtpInput
-                value={otp}
-                onChange={(otp) => {
-                  setOtp(otp)
-                  console.log('OTP:', otp);
-                }}
-                numInputs={6}
-                renderInput={(props) => <input {...props} style={{ color: 'black' }} />}
-              />
-            </div>
-            <button type="submit">Verify</button>
-          </form>
-        </div>
-        <div className="card_terms">
-          <span>Didn't receive the OTP? <Link to="#">Resend OTP</Link></span>
-        </div>
-      </div>
-    </div>
+      <Box className="card" p={4} boxShadow={3} borderRadius={2} bgcolor="background.paper" textAlign="center">
+        <Typography variant="h4" gutterBottom>
+          Verify Account
+        </Typography>
+        <form onSubmit={onFormSubmit} className="form">
+          <Box display="flex" justifyContent="center" mb={2}>
+            <OtpInput
+              value={otp}
+              onChange={setOtp}
+              numInputs={6}
+              inputStyle={{
+                width: "3rem",
+                height: "3rem",
+                borderRadius: 4,
+                padding: 0,
+                border: "1px solid rgba(0,0,0,0.23)"
+              }}
+              renderInput={(inputProps, index) => (
+                <input {...inputProps} />
+              )}
+            />
+          </Box>
+          <Button type="submit" loadingPosition="center"  variant="contained" fullWidth loading={loading} className="form button">
+            {loading ? 'Verifying...' : 'Verify'}
+          </Button>
+        </form>
+        <Typography variant="body2" mt={2}>
+          Didn't receive the OTP? <Link to="#">Resend OTP</Link>
+        </Typography>
+      </Box>
+    </Box>
   );
 };
 

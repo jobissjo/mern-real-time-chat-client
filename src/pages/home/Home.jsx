@@ -5,10 +5,11 @@ import ChatArea from './components/ChatArea'
 import { useSelector } from 'react-redux';
 import { io } from 'socket.io-client';
 import { useMediaQuery } from '@mui/material';
+import PropTypes from 'prop-types';
 
-const socket = io('wss://sink-playback-ave-failure.trycloudflare.com');
 
-const Home = () => {
+
+const Home = ({socket}) => {
   const { user, selectedChat } = useSelector((state) => state.userReducer);
   const [onlineUsers, setOnlineUsers] = useState([]);
   const isMobile = useMediaQuery("(max-width: 768px)");
@@ -53,5 +54,8 @@ const Home = () => {
   </div>
   )
 }
+Home.propTypes = {
+  socket: PropTypes.object.isRequired,
+};
 
-export default Home
+export default Home;

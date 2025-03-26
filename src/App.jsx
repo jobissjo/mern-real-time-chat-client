@@ -14,6 +14,12 @@ import PreferenceList from "./pages/profile/PreferenceList.jsx";
 import ProfileSecurity from "./pages/profile/ProfileSecurity.jsx";
 import "bootstrap/dist/css/bootstrap.min.css";
 import "bootstrap/dist/js/bootstrap.bundle.min.js";
+import GlobalSearch from "./pages/home/components/SearchUser/GlobalSearch.jsx";
+import { io } from 'socket.io-client';
+
+
+const socket = io('wss://subscribers-truth-dns-injured.trycloudflare.com');
+
 function App() {
   const {loader} = useSelector(state=> state.loaderReducer)
   return (
@@ -22,7 +28,7 @@ function App() {
       {loader && <Loader  />}
       <BrowserRouter>
         <Routes>
-          <Route path="/" element={ <ProtectedRoute> <Home/> </ProtectedRoute> }></Route>
+          <Route path="/" element={ <ProtectedRoute> <Home socket={socket} /> </ProtectedRoute> }></Route>
           <Route path="/login" element={<Login/>}></Route>
           <Route path="/signup" element={<SignUp/>}></Route>
           <Route path="/verify-account" element={<VerifyAccount/>}></Route>
@@ -31,6 +37,7 @@ function App() {
           <Route path="/notifications" element={<ProtectedRoute><NotificationList/></ProtectedRoute>}></Route>
           <Route path="/preferences" element={<ProtectedRoute><PreferenceList/></ProtectedRoute>}></Route>
           <Route path="/security" element={<ProtectedRoute><ProfileSecurity/></ProtectedRoute>}></Route>
+          <Route path="/search" element={<ProtectedRoute><GlobalSearch/></ProtectedRoute>}></Route>
         </Routes>
       </BrowserRouter>
     </div>

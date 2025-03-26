@@ -2,7 +2,7 @@ import axios from "axios";
 
 
 const axiosInstance = axios.create({
-    baseURL: "https://sink-playback-ave-failure.trycloudflare.com"
+    baseURL: "https://subscribers-truth-dns-injured.trycloudflare.com"
 })
 
 axiosInstance.interceptors.request.use(

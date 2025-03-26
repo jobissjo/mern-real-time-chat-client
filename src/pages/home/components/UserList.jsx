@@ -107,12 +107,16 @@ const UserList = ({ searchKey, onlineUsers, socket }) => {
 
     const handleReceiveMessage = async (message) => {
       const parsedText = JSON.parse(message?.text);
-      const chatInfo = await getChatMessage(message?.chatId);
-      const decryptedMessage = await decryptMessage(parsedText.encryptedMessage, parsedText.iv, chatInfo._id);
+      // const chatInfo = await getChatMessage(message?.chatId);
+      
+      
+      const chatInfo = allChats?.filter(chat => chat._id === message.chatId)[0]
+      console.log('parsedText', parsedText, "chatInfo", chatInfo);
+      const decryptedMessage = await decryptMessage(parsedText.encryptedMessage, parsedText.iv, chatInfo.encryptedKey);
       const decryptedLastMsg = {...message, text: decryptedMessage}
 
       const allDecryptedChats = decryptedAllChats?.map(decryptChat => {
-        if (decryptChat._id === message.chat._id) {
+        if (decryptChat._id === message.chatId) {
           return {
            ...decryptChat,
             unreadMessageCount: decryptChat?.unreadMessageCount? decryptChat.unreadMessageCount + 1 : 1,

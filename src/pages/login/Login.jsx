@@ -35,24 +35,27 @@ const Login = () => {
       return;
     }
     setLoading(true);
+    try{
+      const response = await loginUser(user);
+      setLoading(false);
+      if(response.status == 200){
+        toast.success(response.data.message)
+        setUser({ email: '', password: '' })
 
-    [response, status_code] = await loginUser(user);
-    setLoading(false);
-    if (status_code == 200) {
-      toast.success(response.message)
-      setUser({ email: '', password: '' })
-
-      setTimeout(() => {
+        setTimeout(() => {
         console.log("try to navigate to home page");
 
         navigate('/')
       }, [1000])
+      }
     }
-    else {
-      console.log(response);
+    catch (error) {
+      setLoading(false);
+      toast.error(error.response?.data?.message);
+    }
 
-      toast.error(response?.message)
-    }
+    
+    
 
 
 

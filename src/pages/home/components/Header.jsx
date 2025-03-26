@@ -16,6 +16,7 @@ import {
 } from "@mui/material";
 import MarkAsReadIcon from "@mui/icons-material/DoneAll";
 import { setPreference } from "../../../redux/userSlice.js";
+import SearchIcon from "@mui/icons-material/Search";
 
 const Header = ({ socket }) => {
   const { user, preference } = useSelector(state => state.userReducer);
@@ -51,17 +52,17 @@ const Header = ({ socket }) => {
       console.log(error)
     }
   }
- 
-  
-  
-  
+
+
+
+
   const updatePreference = async () => {
     try {
       let response = await updateUserPreferences({ isDarkMode: !preference?.isDarkMode })
       if (response.status === 200) {
         const preferenceResponse = await getUserPreferences()
         dispatch(setPreference(preferenceResponse.data?.data));
-        
+
       }
     }
     catch (error) {
@@ -75,7 +76,7 @@ const Header = ({ socket }) => {
 
   useEffect(() => {
     console.log(preference, 'preference');
-    
+
     if (preference?.isDarkMode) {
       document.body.classList.add('dark-mode');
       document.body.classList.remove('root');
@@ -117,7 +118,7 @@ const Header = ({ socket }) => {
   }
 
   return (
-    <AppBar position="static" sx={{ backgroundColor:  "var(--secondary-color);" }}>
+    <AppBar position="static" sx={{ backgroundColor: "var(--secondary-color);" }}>
       <Toolbar>
         <IconButton color="inherit" onClick={() => navigate("/")}>
           <ChatIcon />
@@ -130,6 +131,11 @@ const Header = ({ socket }) => {
           <DarkModeIcon sx={{ mr: 1 }} />
           <Switch checked={preference?.isDarkMode} onChange={updatePreference} color="default" />
         </Box>
+
+        {/* Search Icon Button */}
+        <IconButton color="inherit" onClick={() => navigate("/search")}>
+          <SearchIcon />
+        </IconButton>
 
         <IconButton color="inherit" onClick={(event) => setAnchorEl(event.currentTarget)}>
           <Badge badgeContent={unreadNotificationCount} color="error">
