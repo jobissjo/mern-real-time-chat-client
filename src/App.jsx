@@ -18,7 +18,7 @@ import GlobalSearch from "./pages/home/components/SearchUser/GlobalSearch.jsx";
 import { io } from 'socket.io-client';
 
 
-const socket = io('wss://subscribers-truth-dns-injured.trycloudflare.com');
+const socket = io('wss://breakfast-louisiana-attorneys-work.trycloudflare.com');
 
 function App() {
   const {loader} = useSelector(state=> state.loaderReducer)
@@ -37,7 +37,7 @@ function App() {
           <Route path="/notifications" element={<ProtectedRoute><NotificationList/></ProtectedRoute>}></Route>
           <Route path="/preferences" element={<ProtectedRoute><PreferenceList/></ProtectedRoute>}></Route>
           <Route path="/security" element={<ProtectedRoute><ProfileSecurity/></ProtectedRoute>}></Route>
-          <Route path="/search" element={<ProtectedRoute><GlobalSearch/></ProtectedRoute>}></Route>
+          <Route path="/search" element={<ProtectedRoute><GlobalSearch socket={socket} /></ProtectedRoute>}></Route>
         </Routes>
       </BrowserRouter>
     </div>

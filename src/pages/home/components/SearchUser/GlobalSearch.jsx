@@ -4,6 +4,7 @@ import { Container, Typography } from "@mui/material";
 import Header from "../Header";
 import SearchUser from "./SearchUser";
 import SearchUserList from "./SearchUserList";
+import { getGlobalSearchFriendsList } from "../../../../apiCalls/user";
 
 const GlobalSearch = ({ socket }) => {
   const [searchTerm, setSearchTerm] = useState("");
@@ -18,14 +19,14 @@ const GlobalSearch = ({ socket }) => {
       }
       setLoading(true);
       // API Call here (Uncomment when implemented)
-      // try {
-      //   const response = await searchUsers(searchTerm);
-      //   if (response.status === 200) {
-      //     setUsers(response.data?.users || []);
-      //   }
-      // } catch (error) {
-      //   console.error("Error fetching users:", error);
-      // }
+      try {
+        const response = await getGlobalSearchFriendsList(searchTerm)
+        if (response.status === 200) {
+          setUsers(response.data?.data || []);
+        }
+      } catch (error) {
+        console.error("Error fetching users:", error);
+      }
       setLoading(false);
     };
 
@@ -41,7 +42,7 @@ const GlobalSearch = ({ socket }) => {
       <Header socket={socket} />
       <div className="main-content">
         <Container maxWidth="sm">
-          <Typography variant="h5" sx={{ mt: 3, mb: 2 }}>
+          <Typography variant="h5" sx={{ mt: 3, mb: 2 }} color="var(--text-color)">
             Search Users
           </Typography>
 
@@ -49,7 +50,7 @@ const GlobalSearch = ({ socket }) => {
           <SearchUser searchTerm={searchTerm} setSearchTerm={setSearchTerm} />
 
           {/* Search Result List Component */}
-          <SearchUserList users={users} searchTerm={searchTerm} loading={loading} />
+          <SearchUserList users={users} searchTerm={searchTerm} loading={loading} setUsers={setUsers} />
         </Container>
       </div>
     </div>

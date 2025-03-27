@@ -37,4 +37,10 @@ const getFriendsList = async ()=> {
 const getNotChattedFriendsList = async ()=> {
     return await axiosInstance.get("/api/user/not-chatted-friends");
 }
-export  {getLoggedUser, getAllUsers, updateProfilePicture, getFriendsList, getNotChattedFriendsList};
+
+const getGlobalSearchFriendsList = async (searchKey)=> {
+    return await axiosInstance.get(`/api/user/search-global-users`, {
+        params: {searchKey}        
+    });
+}
+export  {getLoggedUser, getAllUsers, updateProfilePicture, getFriendsList, getNotChattedFriendsList, getGlobalSearchFriendsList};
