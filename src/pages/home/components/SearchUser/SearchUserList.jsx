@@ -11,6 +11,7 @@ import NoUsersFound from "./NoUsersFound";
 import PendingActionsIcon from '@mui/icons-material/PendingActions';
 import { acceptFriendRequest, sendFriendRequest } from "../../../../apiCalls/friendRequest";
 import CheckIcon from '@mui/icons-material/Check';
+import Tooltip from "@mui/material/Tooltip";
 
 const SearchUserList = ({ users, searchTerm, loading, setUsers }) => {
   const navigate = useNavigate();
@@ -75,11 +76,17 @@ const SearchUserList = ({ users, searchTerm, loading, setUsers }) => {
                 },
               }} />
             {user?.isFriend && <IconButton><ChatIcon color="primary" /> </IconButton>}
-            {!user?.isFriend && !user?.isReceivedRequest && !user?.isFriendRequest && <IconButton
-              onClick={() => handleAddFriendRequest(user._id)}> <PersonAddIcon color="secondary" /> </IconButton>
+            {!user?.isFriend && !user?.isReceivedRequest && !user?.isFriendRequest && 
+            <Tooltip title="Accept Friend Request" arrow>
+            <IconButton
+              onClick={() => handleAddFriendRequest(user._id)}> <PersonAddIcon color="secondary" /> 
+              </IconButton>
+              </Tooltip>
             }
             {!user?.isFriend && user?.isFriendRequest &&
-              <IconButton >  <PendingActionsIcon sx={{ color: "orange" }} /> </IconButton>}
+            <Tooltip title="Pending Friend Request" arrow>
+              <IconButton>  <PendingActionsIcon sx={{ color: "orange" }} /> </IconButton>
+            </Tooltip>}
             {!user?.isFriend && user?.isReceivedRequest &&
               <IconButton onClick={() => handleAcceptFriendRequest(user.requestId)}>  <CheckIcon sx={{ color: "orange" }} /> </IconButton>}
 

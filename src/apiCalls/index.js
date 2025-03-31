@@ -2,7 +2,7 @@ import axios from "axios";
 
 
 const axiosInstance = axios.create({
-    baseURL: "https://breakfast-louisiana-attorneys-work.trycloudflare.com"
+    baseURL: "https://edwards-admissions-comparable-plane.trycloudflare.com"
 })
 
 axiosInstance.interceptors.request.use(

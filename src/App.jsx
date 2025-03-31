@@ -18,7 +18,7 @@ import GlobalSearch from "./pages/home/components/SearchUser/GlobalSearch.jsx";
 import { io } from 'socket.io-client';
 
 
-const socket = io('wss://breakfast-louisiana-attorneys-work.trycloudflare.com');
+const socket = io('wss://edwards-admissions-comparable-plane.trycloudflare.com');
 
 function App() {
   const {loader} = useSelector(state=> state.loaderReducer)

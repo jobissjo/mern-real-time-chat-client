@@ -35,7 +35,7 @@ const UserList = ({ searchKey, onlineUsers, socket }) => {
   useEffect(() => {
     fetchNotChattedFriends();
     decryptingAllChats(allChats);
-  }, []);
+  }, [allChats]);
 
   const fetchNotChattedFriends = async () => {
     try {
@@ -54,14 +54,17 @@ const UserList = ({ searchKey, onlineUsers, socket }) => {
   const startNewChat = async (member_id) => {
     try {
       const members = [currentUser._id, member_id];
-      const [response, status_code] = await createNewChat(members);
-      if (status_code === 201) {
+      const response = await createNewChat(members);
+      if (response.status === 201) {
         toast.success('Chat started successfully');
-      } else {
-        toast.error(response.message);
-        const newChat = response.data;
+        const newChat = response.data?.data;
+        console.log(newChat, 'newchat');
+        debugger
         dispatch(setAllChats([...allChats, newChat]));
         dispatch(setSelectedChat(newChat));
+        setFriendsNotChattedYet((prev)=> {
+          return prev?.filter((user)=> user._id !== member_id)
+        })
       }
     } catch (err) {
       toast.error(err.message);

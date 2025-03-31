@@ -5,14 +5,19 @@ import { TextField, Button, Tabs, Tab, Box, Typography, Switch, Dialog, DialogTi
 import { changeCurrentPassword } from '../../apiCalls/auth';
 import toast from 'react-hot-toast';
 import PopupDialog from '../../components/PopupDialog';
+import { useDispatch, useSelector } from 'react-redux';
+import { updateUserPreferences } from '../../apiCalls/preference';
+import { setPreference } from '../../redux/userSlice';
 const ProfileSecurity = () => {
     const [currentPassword, setCurrentPassword] = useState('');
     const [newPassword, setNewPassword] = useState('');
     const [confirmPassword, setConfirmPassword] = useState('');
-    const [twoFactorEnabled, setTwoFactorEnabled] = useState(false);
     const [activeTab, setActiveTab] = useState(0);
     const [showDialog, setShowDialog] = useState(false);
     const [errors, setErrors] = useState({});
+
+    const {preference } = useSelector(state => state.userReducer)
+    const dispatch = useDispatch()
 
     const handlePasswordUpdate = async () => {
         let validationErrors = {};
@@ -42,9 +47,22 @@ const ProfileSecurity = () => {
         }
     };
 
-    const handleTwoFactorToggle = () => {
-        setTwoFactorEnabled(!twoFactorEnabled);
-        setShowDialog(false);
+
+    const handleTwoFactorToggle = async () => {
+        try{
+            const response = await updateUserPreferences({twoFactorAuthentication: !preference.twoFactorAuthentication});
+            setShowDialog(false);
+            if (response.status === 200) {
+                dispatch(setPreference({...preference, twoFactorAuthentication:!preference.twoFactorAuthentication}))
+            }
+
+        }
+        catch (error) {
+            setShowDialog(false);
+        }
+        
+        // setTwoFactorEnabled(!twoFactorEnabled);
+        
     };
 
     return (
@@ -104,8 +122,8 @@ const ProfileSecurity = () => {
                         <Box sx={{ mt: 3, display: 'flex', flexDirection: 'column', gap: 2 }}>
                             <Typography variant="h6"sx={{color: 'var(--text-color)'}} >Two-Factor Authentication</Typography>
                             <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
-                                <Typography sx={{color: 'var(--text-color)'}}>{twoFactorEnabled ? 'Disable 2FA' : 'Enable 2FA'}</Typography>
-                                <Switch sx={{color: 'var(--text-color)'}} checked={twoFactorEnabled} onChange={() => setShowDialog(true)} />
+                                <Typography sx={{color: 'var(--text-color)'}}>{preference?.twoFactorAuthentication ? 'Disable 2FA' : 'Enable 2FA'}</Typography>
+                                <Switch sx={{color: 'var(--text-color)'}} checked={preference?.twoFactorAuthentication} onChange={() => setShowDialog(true)} />
                             </Box>
                         </Box>
                     )}
@@ -113,9 +131,9 @@ const ProfileSecurity = () => {
             </Box>
             <PopupDialog
                 open={showDialog}
-                title="Enable Two-Factor Authentication"
-                message="Do you want to enable two-factor authentication?"
-                type="info"
+                title={preference?.twoFactorAuthentication ? "Disable Two-Factor Authentication" : "Enable Two-Factor Authentication"}
+                message={!preference?.twoFactorAuthentication ? "Do you want to enable two-factor authentication?" : "Do you want to disable two-factor authentication?"}
+                type={!preference?.twoFactorAuthentication ? "info" : 'warning'}
                 onCancel={() => setShowDialog(false)}
                 onConfirm={() => {
                     handleTwoFactorToggle()
