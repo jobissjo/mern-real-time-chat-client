@@ -1,8 +1,7 @@
 import axios from "axios";
 
-
 const axiosInstance = axios.create({
-    baseURL: "https://edwards-admissions-comparable-plane.trycloudflare.com"
+    baseURL: import.meta.env.API_URL
 })
 
 axiosInstance.interceptors.request.use(
