@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Box, Paper, useMediaQuery } from '@mui/material';
-import Search from './search';
+import Search from './Search';
 import UserList from './UserList';
 
 const Sidebar = ({ socket, onlineUsers }) => {
