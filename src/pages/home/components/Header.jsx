@@ -66,7 +66,7 @@ const Header = ({ socket }) => {
       }
     }
     catch (error) {
-      toast.error(error.message);
+      // toast.error(error.message);
     }
   }
 
@@ -93,7 +93,7 @@ const Header = ({ socket }) => {
         setUnreadNotificationCount(unreadNotificationCount - 1)
       }
       else {
-        toast.error(response.error.message)
+        // toast.error(response.error.message)
       }
     }
     catch (error) {
