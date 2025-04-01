@@ -4,7 +4,7 @@ import Login from "./pages/login/Login";
 import SignUp from "./pages/signup/SignUp";
 import { Toaster } from "react-hot-toast";
 import ProtectedRoute from "./components/protectedRoute.jsx";
-import Loader from "./components/loader";
+import Loader from "./components/Loader";
 import { useSelector } from "react-redux";
 import Profile from "./pages/profile/Profile.jsx";
 import VerifyAccount from "./pages/signup/VerifyAccount.jsx";
