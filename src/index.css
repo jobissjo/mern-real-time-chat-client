@@ -23,7 +23,7 @@ body{
   --notification-unread: #f0f4ff;
 }
 
-.dark-mode {
+/* .dark-mode {
   --primary-color: #282828;
   --secondary-color: #391c19;
   --text-color: #ffffffde;
@@ -33,7 +33,19 @@ body{
   --notification-read: #433e3e;
   --notification-unread: #2f3031;
   
+} */
+
+.dark-mode {
+  --primary-color: #1e1e1e; /* Darker background for a true dark mode feel */
+  --secondary-color: #b34a38; /* A richer, deep red to match the theme */
+  --text-color: #ffffffde; /* Ensures readability */
+  --sub-text-color: #b0b0b0; /* Softer gray for subtle text */
+  --box-shadow-color: #00000080; /* Slightly stronger shadow for depth */
+  --card-color: #2a2a2a; /* Dark gray for a balanced contrast */
+  --notification-read: #333333; /* Slightly lighter for better differentiation */
+  --notification-unread: #3d3d3d; /* Subtle contrast for unread notifications */
 }
+
 
 
 /*******************************************************
