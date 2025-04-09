@@ -110,7 +110,7 @@ function ProtectedRoute({ children }) {
         fetchData();
     }, [])
     return (<div>
-        {!isLoading && children}
+        {!isLoading && user?._id && children}
         {isLoading && <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', width: '100dvw', height: '100dvh' }}>
             <CircularProgress />
         </Box>}
