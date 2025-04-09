@@ -116,7 +116,7 @@ const SignUp = () => {
               variant="contained"
 
             >
-              Login
+              Signup
             </Button>
           </form>
         </div>
