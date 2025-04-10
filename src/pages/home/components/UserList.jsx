@@ -25,7 +25,7 @@ import Skeleton from '@mui/material/Skeleton';
 import { decryptMessage } from '../../../utils/encryption';
 
 
-const UserList = ({ searchKey, onlineUsers, socket }) => {
+const UserList = ({ searchKey, onlineUsers, socket, selectedUserId }) => {
   const { allChats, user: currentUser, selectedChat } = useSelector((state) => state.userReducer);
   const dispatch = useDispatch();
   const [friendsNotChattedYet, setFriendsNotChattedYet] = useState([]);
@@ -77,6 +77,20 @@ const UserList = ({ searchKey, onlineUsers, socket }) => {
       dispatch(setSelectedChat(chat));
     }
   };
+
+  useEffect(()=> {
+    console.log(selectedUserId);
+    
+    if(selectedUserId){
+      const chat = allChats.find((chat) => chat.members.some((mem) => mem._id === selectedUserId))
+      if (chat){
+        dispatch(setSelectedChat(chat));
+      }
+      else{
+        startNewChat(selectedUserId)
+      }
+    }
+  }, [selectedUserId])
 
   useEffect(() => {
 
@@ -297,6 +311,7 @@ UserList.propTypes = {
   searchKey: PropTypes.string.isRequired,
   onlineUsers: PropTypes.array.isRequired,
   socket: PropTypes.object.isRequired,
+  selectedUserId: PropTypes.string
 };
 
 export default UserList;

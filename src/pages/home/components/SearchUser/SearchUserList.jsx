@@ -76,6 +76,10 @@ const SearchUserList = ({ users, searchTerm, loading, setUsers }) => {
     );
   }
 
+  const handleStartChat = (userId) => {
+    navigate(`/?selectedUserId=${userId}`);
+  };
+
   return (
     <List>
       {users.length > 0 ? (
@@ -91,7 +95,7 @@ const SearchUserList = ({ users, searchTerm, loading, setUsers }) => {
                   },
                 },
               }} />
-            {user?.isFriend && <IconButton><ChatIcon color="primary" /> </IconButton>}
+            {user?.isFriend && <IconButton onClick={()=> handleStartChat(user._id)}><ChatIcon color="primary" /> </IconButton>}
             {!user?.isFriend && !user?.isReceivedRequest && !user?.isFriendRequest && 
             <Tooltip title="Add Friend Request" arrow>
             <IconButton

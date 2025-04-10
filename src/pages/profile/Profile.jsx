@@ -6,13 +6,30 @@ import { hideLoader, showLoader } from "../../redux/loaderSlice";
 import toast from "react-hot-toast";
 import ProfileSidebar from "./ProfileSidebar";
 import ProfileHeader from "./ProfileHeader";
-import { Box, Button, Avatar, Typography, IconButton } from "@mui/material";
+import { Box, Button, Avatar, Typography, IconButton, TextField, MenuItem } from "@mui/material";
 import { PhotoCamera } from "@mui/icons-material";
+
 
 const Profile = () => {
   const { user } = useSelector((state) => state.userReducer);
   const [image, setImage] = useState("");
   const dispatch = useDispatch();
+  const [userDetails, setUserDetails] = useState({
+    bio: user?.bio || "",
+    dob: user?.dob || "",
+    gender: user?.gender || "",
+  });
+
+  useEffect(() => {
+    if (user) {
+      setImage(user.profilePic);
+      setUserDetails({
+        bio: user.bio || "",
+        dob: user.dob || "",
+        gender: user.gender || "",
+      });
+    }
+  }, [user]);
 
   useEffect(() => {
     if (user?.profilePic) {
@@ -32,15 +49,32 @@ const Profile = () => {
     }
   };
 
+  const handleSaveProfile = async () => {
+    try {
+      dispatch(showLoader());
+      const [response, status] = await updateUserProfile(userDetails);
+      dispatch(hideLoader());
+
+      if (status === 200) {
+        toast.success("Profile updated successfully");
+      } else {
+        toast.error(response.message || "Something went wrong");
+      }
+    } catch (error) {
+      dispatch(hideLoader());
+      toast.error(error.message);
+    }
+  };
+
   const uploadProfilePic = async () => {
     if (!image) {
       toast.error("Please select a profile picture");
       return;
     }
     try {
-      dispatch(showLoader());
+
       const [response_data, status_code] = await updateProfilePicture(image);
-      dispatch(hideLoader());
+
 
       if (status_code === 200) {
         toast.success("Profile image updated successfully");
@@ -48,7 +82,6 @@ const Profile = () => {
         toast.error(response_data.message);
       }
     } catch (error) {
-      dispatch(hideLoader());
       toast.error(error.message);
     }
   };
@@ -73,7 +106,7 @@ const Profile = () => {
                 right: 0,
                 bgcolor: "#ff5b5b",
                 color: "#fff",
-                "&:hover": { bgcolor: "var(--primary-color);" , color: "black"},
+                "&:hover": { bgcolor: "var(--primary-color);", color: "black" },
               }}
             >
               <PhotoCamera />
@@ -82,9 +115,9 @@ const Profile = () => {
           </Box>
 
           {/* Profile Info */}
-          <Typography sx={{color: 'var(--text-color)'}} variant="h5">{user?.firstName} {user?.lastName}</Typography>
-          <Typography sx={{color: 'var(--text-color)'}} variant="body1"><b>Email:</b> {user?.email}</Typography>
-          <Typography sx={{color: 'var(--text-color)'}} variant="body1"><b>Account Created:</b> {moment(user?.createdAt).format("DD MMMM YYYY")}</Typography>
+          <Typography sx={{ color: 'var(--text-color)' }} variant="h5">{user?.firstName} {user?.lastName}</Typography>
+          <Typography sx={{ color: 'var(--text-color)' }} variant="body1"><b>Email:</b> {user?.email}</Typography>
+          <Typography sx={{ color: 'var(--text-color)' }} variant="body1"><b>Account Created:</b> {moment(user?.createdAt).format("DD MMMM YYYY")}</Typography>
 
           {/* Upload Button */}
           <Button
@@ -94,6 +127,58 @@ const Profile = () => {
           >
             Upload Profile Picture
           </Button>
+          <Box sx={{ width: "100%", maxWidth: 400, mt: 4 }}>
+            <Typography variant="h6" sx={{ mb: 2, color: 'var(--text-color)' }}>
+              Update Profile Info
+            </Typography>
+
+            {/* Bio */}
+            <TextField
+              label="Bio"
+              variant="outlined"
+              fullWidth
+              value={userDetails.bio}
+              onChange={(e) => setUserDetails({ ...userDetails, bio: e.target.value })}
+              sx={{ mb: 2 }}
+            />
+
+            {/* Date of Birth */}
+            <TextField
+              label="Date of Birth"
+              type="date"
+              variant="outlined"
+              fullWidth
+              InputLabelProps={{ shrink: true }}
+              value={userDetails.dob?.split("T")[0] || ""}
+              onChange={(e) => setUserDetails({ ...userDetails, dob: e.target.value })}
+              sx={{ mb: 2 }}
+            />
+
+            {/* Gender */}
+            <TextField
+              select
+              label="Gender"
+              variant="outlined"
+              fullWidth
+              value={userDetails.gender}
+              onChange={(e) => setUserDetails({ ...userDetails, gender: e.target.value })}
+              sx={{ mb: 2 }}
+            >
+              <MenuItem value="">Select Gender</MenuItem>
+              <MenuItem value="male">Male</MenuItem>
+              <MenuItem value="female">Female</MenuItem>
+              <MenuItem value="other">Other</MenuItem>
+            </TextField>
+
+            {/* Save Button */}
+            <Button
+              variant="outlined"
+              sx={{ mt: 1, borderColor: "#ff5b5b", color: "#ff5b5b", "&:hover": { bgcolor: "#ff5b5b", color: "white" } }}
+              onClick={handleSaveProfile}
+            >
+              Save Changes
+            </Button>
+          </Box>
         </Box>
       </Box>
     </Box>

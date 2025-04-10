@@ -275,12 +275,14 @@ const ChatArea = ({ socket }) => {
           }}
         >
           {/* Chat Header */}
-          <Box sx={{ p: 2, borderBottom: "1px solid #ddd", display: "flex", alignItems: "center", justifyContent: "space-between" , width: "100%"}}>
+          <Box  sx={{ p: 2, borderBottom: "1px solid #ddd", display: "flex", alignItems: "center", justifyContent: "space-between" , width: "100%"}}>
             <Box sx={{display: "flex", alignItems: "center", gap: "12px"}}>
               <IconButton onClick={()=> dispatch(setSelectedChat(null))}>
               <ArrowBackIcon sx={{ color: "var(--text-color)" }} />
               </IconButton>
+              <IconButton onClick={()=> {}}>
               <Avatar src={selectedUser.profilePic}>{selectedUser.firstName[0]}</Avatar>
+              </IconButton>
               <Typography variant="h6" style={{color: "var(--text-color)"}}>
                 {selectedUser?.firstName} {selectedUser?.lastName}
               </Typography>
@@ -452,6 +454,7 @@ const ChatArea = ({ socket }) => {
 
 ChatArea.propTypes = {
   socket: PropTypes.object.isRequired,
+  selectedUserId: PropTypes.string,
 };
 
 export default ChatArea;
