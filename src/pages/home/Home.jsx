@@ -13,6 +13,9 @@ const Home = ({socket}) => {
   const { user, selectedChat } = useSelector((state) => state.userReducer);
   const [onlineUsers, setOnlineUsers] = useState([]);
   const isMobile = useMediaQuery("(max-width: 768px)");
+  const searchParams = new URLSearchParams(location.search);
+
+  const selectedUserId = searchParams.get('selectedUserId');
   
 
   useEffect(()=> {
@@ -41,11 +44,11 @@ const Home = ({socket}) => {
               selectedChat ? (
                 <ChatArea socket={socket} />
               ) : (
-                <Sidebar socket={socket} onlineUsers={onlineUsers} />
+                <Sidebar socket={socket} onlineUsers={onlineUsers} selectedUserId={selectedUserId} />
               )
             ):(
               <>
-              <Sidebar socket={socket} onlineUsers={onlineUsers} />
+              <Sidebar socket={socket} onlineUsers={onlineUsers} selectedUserId={selectedUserId} />
           
               {selectedChat && <ChatArea socket={socket} />}
               </>

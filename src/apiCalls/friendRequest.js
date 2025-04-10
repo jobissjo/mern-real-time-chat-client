@@ -17,5 +17,5 @@ export const getAllFriendRequests = async ()=> {
 }
 
 export const cancelFriendRequest = async (requestId)=> {
-    return await axiosInstance.delete(`/api/friend/cancel-friend-request/${requestId}`);
+    return await axiosInstance.put(`/api/friend/cancel-friend-request`, {requestId});
 }

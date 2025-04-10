@@ -9,9 +9,10 @@ import ChatIcon from "@mui/icons-material/Chat";
 import PersonAddIcon from "@mui/icons-material/PersonAdd";
 import NoUsersFound from "./NoUsersFound";
 import PendingActionsIcon from '@mui/icons-material/PendingActions';
-import { acceptFriendRequest, sendFriendRequest } from "../../../../apiCalls/friendRequest";
+import { acceptFriendRequest, cancelFriendRequest, sendFriendRequest } from "../../../../apiCalls/friendRequest";
 import CheckIcon from '@mui/icons-material/Check';
 import Tooltip from "@mui/material/Tooltip";
+import CancelIcon from '@mui/icons-material/Cancel';
 
 const SearchUserList = ({ users, searchTerm, loading, setUsers }) => {
   const navigate = useNavigate();
@@ -47,6 +48,21 @@ const SearchUserList = ({ users, searchTerm, loading, setUsers }) => {
 
   }
 
+  const handleCancelFriendRequest = async (requestId) => {
+    debugger
+    if (requestId) {
+      const response = await cancelFriendRequest(requestId);
+      if (response.status === 200) {
+        setUsers((prevUsers) =>
+          prevUsers.map((user) =>
+            user.requestId === requestId ? { ...user, isFriendRequest: false } : user
+          )
+        );
+      }
+    }
+
+  }
+
   if (loading) {
     return (
       <List>
@@ -59,6 +75,10 @@ const SearchUserList = ({ users, searchTerm, loading, setUsers }) => {
       </List>
     );
   }
+
+  const handleStartChat = (userId) => {
+    navigate(`/?selectedUserId=${userId}`);
+  };
 
   return (
     <List>
@@ -75,20 +95,33 @@ const SearchUserList = ({ users, searchTerm, loading, setUsers }) => {
                   },
                 },
               }} />
-            {user?.isFriend && <IconButton><ChatIcon color="primary" /> </IconButton>}
+            {user?.isFriend && <IconButton onClick={()=> handleStartChat(user._id)}><ChatIcon color="primary" /> </IconButton>}
             {!user?.isFriend && !user?.isReceivedRequest && !user?.isFriendRequest && 
-            <Tooltip title="Accept Friend Request" arrow>
+            <Tooltip title="Add Friend Request" arrow>
             <IconButton
               onClick={() => handleAddFriendRequest(user._id)}> <PersonAddIcon color="secondary" /> 
               </IconButton>
               </Tooltip>
             }
             {!user?.isFriend && user?.isFriendRequest &&
+           (
+            <>
             <Tooltip title="Pending Friend Request" arrow>
               <IconButton>  <PendingActionsIcon sx={{ color: "orange" }} /> </IconButton>
-            </Tooltip>}
+            </Tooltip>
+            <Tooltip title="Cancel Friend Request" arrow>
+            <IconButton onClick={()=> handleCancelFriendRequest(user.requestId)}>  <CancelIcon sx={{ color: "orange" }} /> </IconButton>
+          </Tooltip>
+          </>
+           )}
             {!user?.isFriend && user?.isReceivedRequest &&
-              <IconButton onClick={() => handleAcceptFriendRequest(user.requestId)}>  <CheckIcon sx={{ color: "orange" }} /> </IconButton>}
+            <Tooltip title="Accept Friend Request" arrow>
+              <IconButton onClick={() => handleAcceptFriendRequest(user.requestId)}>  
+                <CheckIcon sx={{ color: "orange" }} /> 
+              </IconButton>
+              </Tooltip>
+            }
+
 
 
 
