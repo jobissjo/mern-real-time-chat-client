@@ -1,13 +1,14 @@
 import moment from "moment";
 import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { updateProfilePicture } from "../../apiCalls/user";
+import { updateProfilePicture, updateUserProfile } from "../../apiCalls/user";
 import { hideLoader, showLoader } from "../../redux/loaderSlice";
 import toast from "react-hot-toast";
 import ProfileSidebar from "./ProfileSidebar";
 import ProfileHeader from "./ProfileHeader";
 import { Box, Button, Avatar, Typography, IconButton, TextField, MenuItem } from "@mui/material";
 import { PhotoCamera } from "@mui/icons-material";
+import { setUser } from "../../redux/userSlice";
 
 
 const Profile = () => {
@@ -51,17 +52,17 @@ const Profile = () => {
 
   const handleSaveProfile = async () => {
     try {
-      dispatch(showLoader());
-      const [response, status] = await updateUserProfile(userDetails);
-      dispatch(hideLoader());
-
-      if (status === 200) {
+      // dispatch(showLoader());
+      debugger
+      const response = await updateUserProfile(userDetails);
+      if (response.status === 200) {
+        dispatch(setUser(response.data?.data));
         toast.success("Profile updated successfully");
       } else {
         toast.error(response.message || "Something went wrong");
       }
     } catch (error) {
-      dispatch(hideLoader());
+      // dispatch(hideLoader());
       toast.error(error.message);
     }
   };

@@ -29,6 +29,11 @@ const updateProfilePicture = async (image)=> {
     }
 }
 
+const updateUserProfile = async (userData)=> {
+    const response = await axiosInstance.put("/api/user", userData);
+    return response;
+}
+
 
 const getFriendsList = async ()=> {
     return await axiosInstance.get("/api/user/get-friends-list");
@@ -43,4 +48,6 @@ const getGlobalSearchFriendsList = async (searchKey)=> {
         params: {searchKey}        
     });
 }
-export  {getLoggedUser, getAllUsers, updateProfilePicture, getFriendsList, getNotChattedFriendsList, getGlobalSearchFriendsList};
+export  {getLoggedUser, getAllUsers, updateProfilePicture, getFriendsList, getNotChattedFriendsList, getGlobalSearchFriendsList,
+    updateUserProfile
+};
