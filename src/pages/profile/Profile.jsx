@@ -1,7 +1,7 @@
 import moment from "moment";
 import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { updateProfilePicture, updateUserProfile } from "../../apiCalls/user";
+import { getLoggedUser, updateProfilePicture, updateUserProfile } from "../../apiCalls/user";
 import { hideLoader, showLoader } from "../../redux/loaderSlice";
 import toast from "react-hot-toast";
 import ProfileSidebar from "./ProfileSidebar";
@@ -38,6 +38,18 @@ const Profile = () => {
     }
   }, [user]);
 
+  const fetchUserProfile = async () => {
+    try {
+      const [response, status] = await getLoggedUser();
+      if (status === 200) {
+        dispatch(setUser(response?.data));
+      }
+    } catch (error) {
+      toast.error(error.message);
+    }
+
+  }
+
   const handleImageUpload = (e) => {
     if (e.target.files[0]) {
       const file = e.target.files[0];
@@ -50,6 +62,8 @@ const Profile = () => {
     }
   };
 
+
+
   const handleSaveProfile = async () => {
     try {
       // dispatch(showLoader());
@@ -57,6 +71,7 @@ const Profile = () => {
       const response = await updateUserProfile(userDetails);
       if (response.status === 200) {
         dispatch(setUser(response.data?.data));
+
         toast.success("Profile updated successfully");
       } else {
         toast.error(response.message || "Something went wrong");
@@ -78,6 +93,7 @@ const Profile = () => {
 
 
       if (status_code === 200) {
+        fetchUserProfile()
         toast.success("Profile image updated successfully");
       } else {
         toast.error(response_data.message);
@@ -140,7 +156,15 @@ const Profile = () => {
               fullWidth
               value={userDetails.bio}
               onChange={(e) => setUserDetails({ ...userDetails, bio: e.target.value })}
-              sx={{ mb: 2 }}
+              sx={{
+                mb: 2, input: {
+                  color: 'var(--text-color)',
+                  '::placeholder': {
+                    color: 'var(--sub-text-color)', // 👈 placeholder color
+                    opacity: 1 // make sure it's fully visible
+                  }
+                }
+              }}
             />
 
             {/* Date of Birth */}
@@ -149,10 +173,19 @@ const Profile = () => {
               type="date"
               variant="outlined"
               fullWidth
-              InputLabelProps={{ shrink: true }}
+              slotProps={{ shrink: true }}
               value={userDetails.dob?.split("T")[0] || ""}
               onChange={(e) => setUserDetails({ ...userDetails, dob: e.target.value })}
-              sx={{ mb: 2 }}
+              sx={{
+                mb: 2, input: {
+                  color: 'var(--text-color)',
+                  '::placeholder': {
+                    color: 'var(--sub-text-color)', // 👈 placeholder color
+                    opacity: 1 // make sure it's fully visible
+                  },
+                
+                }
+              }}
             />
 
             {/* Gender */}
@@ -163,7 +196,15 @@ const Profile = () => {
               fullWidth
               value={userDetails.gender}
               onChange={(e) => setUserDetails({ ...userDetails, gender: e.target.value })}
-              sx={{ mb: 2 }}
+              sx={{
+                mb: 2,
+                '& .MuiInputBase-input': {
+                  color: 'var(--text-color)' // 👈 selected value color
+                },
+                '& .MuiInputLabel-root': {
+                  color: 'var(--sub-text-color)' // 👈 label color
+                }
+              }}
             >
               <MenuItem value="">Select Gender</MenuItem>
               <MenuItem value="male">Male</MenuItem>
