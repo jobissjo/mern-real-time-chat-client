@@ -106,8 +106,8 @@ const Profile = () => {
                 bottom: 0,
                 right: 0,
                 bgcolor: "#ff5b5b",
-                color: "#fff",
-                "&:hover": { bgcolor: "var(--primary-color);", color: "black" },
+                color: "white",
+                borderColor: 'var(--button-color)',  "&:hover": { bgcolor: 'var(--icon-button-hover-color)', color: "white" } 
               }}
             >
               <PhotoCamera />
@@ -122,8 +122,9 @@ const Profile = () => {
 
           {/* Upload Button */}
           <Button
-            variant="contained"
-            sx={{ mt: 2, bgcolor: "#ff5b5b", "&:hover": { bgcolor: "var(--primary-color);", color: 'black' } }}
+            variant="outlined"
+            sx={{ mt: 1, borderColor: 'var(--button-color)', color: 'var(--button-color)', "&:hover": { bgcolor: 'var(--button-color)', color: "white" } }}
+
             onClick={uploadProfilePic}
           >
             Upload Profile Picture
@@ -140,7 +141,28 @@ const Profile = () => {
               fullWidth
               value={userDetails.bio}
               onChange={(e) => setUserDetails({ ...userDetails, bio: e.target.value })}
-              sx={{ mb: 2 }}
+              sx={{ 
+                mb: 2,
+                '& .MuiOutlinedInput-root': {
+                  '& input': {
+                    color: 'var(--text-color)',
+                    '&::placeholder': {
+                      color: 'var(--text-color)',
+                      opacity: 0.7
+                    }
+                  },
+                  '&.Mui-focused fieldset': {
+                    borderColor: 'var(--secondary-color)'
+                  }
+                },
+                '& .MuiInputLabel-root': {
+                  color: 'var(--text-color)',
+                  opacity: 0.7,
+                  '&.Mui-focused': {
+                    color: 'var(--secondary-color)'
+                  }
+                }
+              }}
             />
 
             {/* Date of Birth */}
@@ -152,7 +174,28 @@ const Profile = () => {
               InputLabelProps={{ shrink: true }}
               value={userDetails.dob?.split("T")[0] || ""}
               onChange={(e) => setUserDetails({ ...userDetails, dob: e.target.value })}
-              sx={{ mb: 2 }}
+              sx={{ 
+                mb: 2,
+                '& .MuiOutlinedInput-root': {
+                  '& input': {
+                    color: 'var(--text-color)',
+                    '&::placeholder': {
+                      color: 'var(--text-color)',
+                      opacity: 0.7
+                    }
+                  },
+                  '&.Mui-focused fieldset': {
+                    borderColor: 'var(--secondary-color)'
+                  }
+                },
+                '& .MuiInputLabel-root': {
+                  color: 'var(--text-color)',
+                  opacity: 0.7,
+                  '&.Mui-focused': {
+                    color: 'var(--secondary-color)'
+                  }
+                }
+              }}
             />
 
             {/* Gender */}
@@ -163,7 +206,24 @@ const Profile = () => {
               fullWidth
               value={userDetails.gender}
               onChange={(e) => setUserDetails({ ...userDetails, gender: e.target.value })}
-              sx={{ mb: 2 }}
+              sx={{ 
+                mb: 2,
+                '& .MuiOutlinedInput-root': {
+                  '& .MuiSelect-select': {
+                    color: 'var(--text-color)'
+                  },
+                  '&.Mui-focused fieldset': {
+                    borderColor: 'var(--secondary-color)'
+                  }
+                },
+                '& .MuiInputLabel-root': {
+                  color: 'var(--text-color)',
+                  opacity: 0.7,
+                  '&.Mui-focused': {
+                    color: 'var(--secondary-color)'
+                  }
+                }
+              }}
             >
               <MenuItem value="">Select Gender</MenuItem>
               <MenuItem value="male">Male</MenuItem>
@@ -174,7 +234,7 @@ const Profile = () => {
             {/* Save Button */}
             <Button
               variant="outlined"
-              sx={{ mt: 1, borderColor: "#ff5b5b", color: "#ff5b5b", "&:hover": { bgcolor: "#ff5b5b", color: "white" } }}
+              sx={{ mt: 1, borderColor: 'var(--button-color)', color: 'var(--button-color)', "&:hover": { bgcolor: 'var(--button-color)', color: "white" } }}
               onClick={handleSaveProfile}
             >
               Save Changes

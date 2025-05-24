@@ -87,9 +87,28 @@ const ProfileSecurity = () => {
                                 helperText={errors.currentPassword}
                                 value={currentPassword}
                                 onChange={(e) => setCurrentPassword(e.target.value)}
-                                sx={{color: 'var(--text-color)', '& input::placeholder': {
-                                    color: 'var(--sub-text-color)',
-                                }}}
+                                sx={{ 
+                                    mb: 2,
+                                    '& .MuiOutlinedInput-root': {
+                                      '& input': {
+                                        color: 'var(--text-color)',
+                                        '&::placeholder': {
+                                          color: 'var(--text-color)',
+                                          opacity: 0.7
+                                        }
+                                      },
+                                      '&.Mui-focused fieldset': {
+                                        borderColor: 'var(--secondary-color)'
+                                      }
+                                    },
+                                    '& .MuiInputLabel-root': {
+                                      color: 'var(--text-color)',
+                                      opacity: 0.7,
+                                      '&.Mui-focused': {
+                                        color: 'var(--secondary-color)'
+                                      }
+                                    }
+                                  }}
                             />
                             <TextField
                                 type="password"
@@ -99,9 +118,28 @@ const ProfileSecurity = () => {
                                 helperText={errors.newPassword}
                                 value={newPassword}
                                 onChange={(e) => setNewPassword(e.target.value)}
-                                sx={{color: 'var(--text-color)', '& input::placeholder': {
-                                    color: 'var(--sub-text-color)',
-                                }}}
+                                sx={{ 
+                                    mb: 2,
+                                    '& .MuiOutlinedInput-root': {
+                                      '& input': {
+                                        color: 'var(--text-color)',
+                                        '&::placeholder': {
+                                          color: 'var(--text-color)',
+                                          opacity: 0.7
+                                        }
+                                      },
+                                      '&.Mui-focused fieldset': {
+                                        borderColor: 'var(--secondary-color)'
+                                      }
+                                    },
+                                    '& .MuiInputLabel-root': {
+                                      color: 'var(--text-color)',
+                                      opacity: 0.7,
+                                      '&.Mui-focused': {
+                                        color: 'var(--secondary-color)'
+                                      }
+                                    }
+                                  }}
                             />
                             <TextField
                                 type="password"
@@ -111,9 +149,28 @@ const ProfileSecurity = () => {
                                 helperText={errors.confirmPassword}
                                 value={confirmPassword}
                                 onChange={(e) => setConfirmPassword(e.target.value)}
-                                sx={{color: 'var(--text-color)', '& input::placeholder': {
-                                    color: 'var(--sub-text-color)',
-                                }}}
+                                sx={{ 
+                                    mb: 2,
+                                    '& .MuiOutlinedInput-root': {
+                                      '& input': {
+                                        color: 'var(--text-color)',
+                                        '&::placeholder': {
+                                          color: 'var(--text-color)',
+                                          opacity: 0.7
+                                        }
+                                      },
+                                      '&.Mui-focused fieldset': {
+                                        borderColor: 'var(--secondary-color)'
+                                      }
+                                    },
+                                    '& .MuiInputLabel-root': {
+                                      color: 'var(--text-color)',
+                                      opacity: 0.7,
+                                      '&.Mui-focused': {
+                                        color: 'var(--secondary-color)'
+                                      }
+                                    }
+                                  }}
                             />
                             <Button variant="contained" style={{backgroundColor: '#ff5b5b'}} onClick={handlePasswordUpdate}>Update Password</Button>
                         </Box>

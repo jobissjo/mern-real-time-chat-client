@@ -1,7 +1,7 @@
 import axios from "axios";
 
 const axiosInstance = axios.create({
-    baseURL: import.meta.env.API_URL ?? 'https://mern-real-time-chat-1.onrender.com'
+    baseURL: import.meta.env.API_URL ?? 'https://photograph-icq-net-helps.trycloudflare.com'
 })
 
 axiosInstance.interceptors.request.use(

@@ -21,6 +21,8 @@ body{
   --card-color: #ffffff;
   --notification-read: #ffffff;
   --notification-unread: #f0f4ff;
+  --button-color: #ff5b5b;
+  --icon-button-hover-color: #ff3b3b;
 }
 
 /* .dark-mode {
@@ -35,17 +37,32 @@ body{
   
 } */
 
-.dark-mode {
-  --primary-color: #1e1e1e; /* Darker background for a true dark mode feel */
-  --secondary-color: #b34a38; /* A richer, deep red to match the theme */
-  --text-color: #ffffffde; /* Ensures readability */
-  --sub-text-color: #b0b0b0; /* Softer gray for subtle text */
-  --box-shadow-color: #00000080; /* Slightly stronger shadow for depth */
-  --card-color: #2a2a2a; /* Dark gray for a balanced contrast */
-  --notification-read: #333333; /* Slightly lighter for better differentiation */
-  --notification-unread: #3d3d3d; /* Subtle contrast for unread notifications */
+/* .dark-mode {
+  --primary-color: #1e1e1e; 
+  --secondary-color: #b34a38; 
+  --text-color: #ffffffde; 
+  --sub-text-color: #b0b0b0;
+  --box-shadow-color: #00000080; 
+  --card-color: #2a2a2a; 
+  --notification-read: #333333; 
+  --notification-unread: #3d3d3d; 
 }
+ */
 
+
+
+.dark-mode {
+  --primary-color: #1a1a1a;      /* Darker background */
+  --secondary-color: #e74c3c;    /* Keep accent color for consistency */
+  --text-color: #e6e6e6;         /* Light grey text for better contrast */
+  --sub-text-color: #b3b3b3;     /* Lighter secondary text */
+  --box-shadow-color: #000000bf; /* Darker shadow */
+  --card-color: #2d2d2d;         /* Slightly lighter than background for cards */
+  --notification-read: #2d2d2d;  /* Match card color */
+  --notification-unread: #3d3d3d; /* Slightly lighter for unread items */
+  --button-color: #ff5b5b;
+  --icon-button-hover-color: #ff3b3b;
+}
 
 
 /*******************************************************
