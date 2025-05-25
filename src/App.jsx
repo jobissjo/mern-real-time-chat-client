@@ -18,7 +18,7 @@ import GlobalSearch from "./pages/home/components/SearchUser/GlobalSearch.jsx";
 import { io } from 'socket.io-client';
 
 
-const socket = io(import.meta.env.WEBSOCKET_URL ?? "wss://photograph-icq-net-helps.trycloudflare.com");
+const socket = io(import.meta.env.WEBSOCKET_URL ?? "wss://mern-real-time-chat-1.onrender.com");
 
 function App() {
   const {loader} = useSelector(state=> state.loaderReducer)
